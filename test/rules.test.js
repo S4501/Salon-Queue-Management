@@ -2,6 +2,7 @@ import assert from 'node:assert';
 import { translations } from '../src/i18n/translations.js';
 import { calculateWaitTime, estimateNewWaitTime } from '../src/utils/waitTimeCalculator.js';
 import { initialBarbers, initialServices, initialTokens } from '../src/data/seedData.js';
+import { CHIME_PRESETS } from '../src/utils/audioChime.js';
 
 console.log('--- STARTING SYSTEM INTEGRATION & RULE TESTS ---');
 
@@ -162,12 +163,18 @@ assert.strictEqual(translations.en.brandName, 'Make Over');
 assert.strictEqual(translations.gu.brandName, 'મેક ઓવર');
 console.log('✓ Salon name correctly configured as "Make Over" / "મેક ઓવર".');
 
-// Test 11: TV Audio Alert Beep Toggle Feature
-console.log('\nTest 11: TV Audio Alert Beep Toggle Feature');
+// Test 11: TV Audio Alert Beep & Spoken Voice Feature
+console.log('\nTest 11: TV Audio Alert Beep & Spoken Voice Feature');
 assert.ok(translations.en.tvAudioAlertOn, 'Missing EN tvAudioAlertOn');
-assert.ok(translations.en.tvAudioAlertOff, 'Missing EN tvAudioAlertOff');
-assert.ok(translations.gu.tvAudioAlertOn, 'Missing GU tvAudioAlertOn');
-assert.ok(translations.gu.tvAudioAlertOff, 'Missing GU tvAudioAlertOff');
-console.log('✓ TV wall display beep sound alert toggle keys verified in English and Gujarati.');
+assert.ok(translations.en.tvAudioVoiceMode, 'Missing EN tvAudioVoiceMode');
+assert.ok(translations.gu.tvAudioVoiceMode, 'Missing GU tvAudioVoiceMode');
+assert.ok(translations.en.testVoiceDemoBtn, 'Missing EN testVoiceDemoBtn');
+assert.ok(translations.gu.testVoiceDemoBtn, 'Missing GU testVoiceDemoBtn');
+assert.strictEqual(CHIME_PRESETS.length, 4, 'Should have 4 selectable chime presets');
+assert.ok(CHIME_PRESETS.find(p => p.id === 'atelier'), 'Should have Atelier chime');
+assert.ok(CHIME_PRESETS.find(p => p.id === 'celestial'), 'Should have Celestial chime');
+assert.ok(CHIME_PRESETS.find(p => p.id === 'marimba'), 'Should have Marimba chime');
+assert.ok(CHIME_PRESETS.find(p => p.id === 'zenGong'), 'Should have Zen Gong chime');
+console.log('✓ TV wall display beep, 4 chime presets, and spoken customer announcement keys verified.');
 
 console.log('\n🎉 ALL 11 TEST SUITES PASSED FLAWLESSLY!\n');

@@ -86,12 +86,12 @@ export default function HomePage() {
 
   return (
     <div className="min-h-screen bg-[#FAF9F6] text-[#0F0F0F] selection:bg-[#C5A880] selection:text-white">
-      
+
       {/* =========================================================================
           SECTION 1: HERO AMBIENT VIDEO EXPERIENCE (MÈCHE EDITORIAL STYLE)
       ========================================================================== */}
       <section className="relative w-full h-[95vh] min-h-[640px] flex items-center justify-center overflow-hidden bg-black">
-        
+
         {/* Ambient Video Background */}
         <video
           autoPlay
@@ -140,7 +140,7 @@ export default function HomePage() {
 
         {/* Hero Content Box */}
         <div className="relative z-20 max-w-4xl mx-auto px-6 text-center text-white space-y-6 pt-12">
-          
+
           {/* Eyebrow */}
           <div className="inline-flex items-center gap-2 text-[10px] sm:text-xs uppercase tracking-[0.3em] font-medium text-[#C5A880] border border-[#C5A880]/40 px-4 py-1.5 rounded-full bg-black/40 backdrop-blur-sm">
             <Sparkles className="w-3 h-3 text-[#C5A880]" />
@@ -230,7 +230,7 @@ export default function HomePage() {
       ========================================================================== */}
       <section id="philosophy" className="py-20 sm:py-32 px-6 max-w-7xl mx-auto">
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 lg:gap-16 items-center">
-          
+
           {/* Left Column: Big Haute Couture Statement */}
           <div className="lg:col-span-7 space-y-8">
             <div className="flex items-center gap-3">
@@ -299,7 +299,7 @@ export default function HomePage() {
       ========================================================================== */}
       <section id="concierge" className="py-20 bg-[#F5F3EF] border-y border-[#E7E3DC]">
         <div className="max-w-7xl mx-auto px-6">
-          
+
           <div className="flex flex-col sm:flex-row sm:items-end justify-between gap-6 mb-12">
             <div>
               <div className="flex items-center gap-2 text-xs uppercase tracking-[0.25em] text-[#C5A880] font-medium font-sans mb-2">
@@ -334,13 +334,12 @@ export default function HomePage() {
               return (
                 <div
                   key={barber.id}
-                  className={`bg-white rounded-2xl p-6 border transition-all duration-300 hover:shadow-lg ${
-                    isBusy
+                  className={`bg-white rounded-2xl p-6 border transition-all duration-300 hover:shadow-lg ${isBusy
                       ? 'border-stone-300'
                       : isAvailable
-                      ? 'border-emerald-300 shadow-sm'
-                      : 'border-amber-200 opacity-85'
-                  }`}
+                        ? 'border-emerald-300 shadow-sm'
+                        : 'border-amber-200 opacity-85'
+                    }`}
                 >
                   {/* Station Number & Badge */}
                   <div className="flex items-center justify-between pb-4 border-b border-stone-100">
@@ -348,13 +347,12 @@ export default function HomePage() {
                       CHAIR {barber.chair}
                     </span>
                     <span
-                      className={`text-[10px] uppercase tracking-wider font-semibold px-2.5 py-1 rounded-full ${
-                        isAvailable
+                      className={`text-[10px] uppercase tracking-wider font-semibold px-2.5 py-1 rounded-full ${isAvailable
                           ? 'bg-emerald-50 text-emerald-700 border border-emerald-200'
                           : isBusy
-                          ? 'bg-stone-100 text-stone-700 border border-stone-200'
-                          : 'bg-amber-50 text-amber-700 border border-amber-200'
-                      }`}
+                            ? 'bg-stone-100 text-stone-700 border border-stone-200'
+                            : 'bg-amber-50 text-amber-700 border border-amber-200'
+                        }`}
                     >
                       {isAvailable ? 'Available Now' : isBusy ? 'In Service' : 'On Break'}
                     </span>
@@ -462,7 +460,7 @@ export default function HomePage() {
       ========================================================================== */}
       <section id="stylists" className="py-24 bg-[#0F0F0F] text-white">
         <div className="max-w-7xl mx-auto px-6">
-          
+
           <div className="text-center max-w-2xl mx-auto mb-16 space-y-4">
             <span className="text-xs uppercase tracking-[0.3em] text-[#C5A880] font-medium font-sans">
               The Collective
@@ -485,7 +483,7 @@ export default function HomePage() {
                     className="w-full h-full object-cover grayscale contrast-125 group-hover:scale-105 group-hover:grayscale-0 transition-all duration-700"
                   />
                   <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-transparent" />
-                  
+
                   <div className="absolute top-4 left-4">
                     <span className="text-[9px] uppercase tracking-[0.25em] font-medium bg-black/60 backdrop-blur-sm border border-white/20 text-[#C5A880] px-3 py-1 rounded-full">
                       Station 0{barber.chair}
@@ -561,7 +559,7 @@ export default function HomePage() {
       ========================================================================== */}
       <section id="location" className="py-24 px-6 max-w-7xl mx-auto">
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 items-center">
-          
+
           <div className="lg:col-span-6 space-y-8">
             <span className="text-xs uppercase tracking-[0.3em] text-[#C5A880] font-medium font-sans">
               Visit The Atelier
@@ -639,9 +637,9 @@ export default function HomePage() {
       ========================================================================== */}
       <footer className="bg-[#0F0F0F] text-white pt-20 pb-12 border-t border-white/10">
         <div className="max-w-7xl mx-auto px-6 space-y-16">
-          
+
           <div className="grid grid-cols-1 md:grid-cols-12 gap-12">
-            
+
             {/* Brand Column */}
             <div className="md:col-span-5 space-y-4">
               <span className="font-serif text-3xl font-light tracking-[0.25em] uppercase text-white">
@@ -691,7 +689,7 @@ export default function HomePage() {
       {isTrackModalOpen && (
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-md animate-fade-in">
           <div className="bg-[#FAF9F6] rounded-3xl p-8 max-w-md w-full border border-[#E7E3DC] shadow-2xl relative text-[#0F0F0F]">
-            
+
             <div className="flex items-center justify-between mb-4">
               <span className="text-[10px] uppercase tracking-[0.25em] text-[#C5A880] font-sans font-medium">
                 Live Token Lookup

@@ -5,11 +5,15 @@ import { calculateWaitTime } from '../../utils/waitTimeCalculator';
 import TvBarberCard from '../../components/display/TvBarberCard';
 import TvUpcomingQueue from '../../components/display/TvUpcomingQueue';
 import CallAnnouncementBanner from '../../components/display/CallAnnouncementBanner';
-import { Sparkles, Clock, Volume2, VolumeX } from 'lucide-react';
-import { playCallAlertSound } from '../../utils/audioChime';
+import TvAudioSettingsModal from '../../components/display/TvAudioSettingsModal';
+import { Sparkles, Clock, Volume2, VolumeX, Mic, Play, Bell, Sliders } from 'lucide-react';
+import {
+  playChimePreset,
+  speakCustomerAnnouncement
+} from '../../utils/audioChime';
 
 export default function TvDisplayPage() {
-  const { t } = useLanguage();
+  const { language, t } = useLanguage();
 
   const {
     barbers,
@@ -21,29 +25,110 @@ export default function TvDisplayPage() {
 
   const [currentTime, setCurrentTime] = useState(new Date());
   const [showCallAlert, setShowCallAlert] = useState(false);
+  const [demoBannerToken, setDemoBannerToken] = useState(null);
+  const [isDemoPlaying, setIsDemoPlaying] = useState(false);
+  const [isSettingsModalOpen, setIsSettingsModalOpen] = useState(false);
 
-  // Audio beep alert preference (defaults to enabled, persisted in localStorage)
-  const [isSoundEnabled, setIsSoundEnabled] = useState(() => {
+  // Independent Chime Sound toggle (persisted)
+  const [chimeEnabled, setChimeEnabled] = useState(() => {
     try {
-      const stored = localStorage.getItem('makeover_tv_chime_enabled');
+      const stored = localStorage.getItem('makeover_tv_chime_active');
       return stored !== 'false';
     } catch {
       return true;
     }
   });
 
-  const toggleSound = () => {
-    setIsSoundEnabled(prev => {
+  // Independent Voice Announcement toggle (persisted)
+  const [voiceEnabled, setVoiceEnabled] = useState(() => {
+    try {
+      const stored = localStorage.getItem('makeover_tv_voice_active');
+      return stored !== 'false';
+    } catch {
+      return true;
+    }
+  });
+
+  // Selected Chime Melody (persisted)
+  const [selectedChimeId, setSelectedChimeId] = useState(() => {
+    try {
+      return localStorage.getItem('makeover_tv_selected_chime') || 'atelier';
+    } catch {
+      return 'atelier';
+    }
+  });
+
+  // Selected Indian Voice Accent URI (persisted)
+  const [selectedVoiceUri, setSelectedVoiceUri] = useState(() => {
+    try {
+      return localStorage.getItem('makeover_tv_selected_voice') || '';
+    } catch {
+      return '';
+    }
+  });
+
+  const handleToggleChime = () => {
+    setChimeEnabled((prev) => {
       const next = !prev;
       try {
-        localStorage.setItem('makeover_tv_chime_enabled', String(next));
-      } catch {
-        // ignore
-      }
+        localStorage.setItem('makeover_tv_chime_active', String(next));
+      } catch {}
       if (next) {
-        playCallAlertSound();
+        playChimePreset(selectedChimeId);
       }
       return next;
+    });
+  };
+
+  const handleToggleVoice = () => {
+    setVoiceEnabled((prev) => {
+      const next = !prev;
+      try {
+        localStorage.setItem('makeover_tv_voice_active', String(next));
+      } catch {}
+      return next;
+    });
+  };
+
+  const handleSelectChime = (chimeId) => {
+    setSelectedChimeId(chimeId);
+    try {
+      localStorage.setItem('makeover_tv_selected_chime', chimeId);
+    } catch {}
+    playChimePreset(chimeId);
+  };
+
+  const handleSelectVoice = (voiceUri) => {
+    setSelectedVoiceUri(voiceUri);
+    try {
+      localStorage.setItem('makeover_tv_selected_voice', voiceUri);
+    } catch {}
+  };
+
+  // Demo Call Trigger
+  const handlePlayVoiceDemo = () => {
+    setIsDemoPlaying(true);
+    const sampleToken = {
+      id: 'T-104',
+      customerName: 'Harshil Joshi',
+      assignedBarberId: 'barber-2'
+    };
+    const sampleBarber = barbers.find((b) => b.id === 'barber-2') || barbers[0] || { chair: 2, name: 'Vikram Solanki' };
+
+    setDemoBannerToken(sampleToken);
+
+    speakCustomerAnnouncement({
+      token: sampleToken,
+      barber: sampleBarber,
+      language,
+      chimeId: selectedChimeId,
+      voiceUri: selectedVoiceUri,
+      playChime: chimeEnabled,
+      playVoice: voiceEnabled,
+      onComplete: () => {
+        setIsDemoPlaying(false);
+        setTimeout(() => setDemoBannerToken(null), 3000);
+      }
     });
   };
 
@@ -53,19 +138,38 @@ export default function TvDisplayPage() {
     return () => clearInterval(timer);
   }, []);
 
-  // Show announcement banner and play beep alert when a customer is called
+  // When a real customer is called: show banner and announce according to active preferences
   useEffect(() => {
     if (lastCalledTimestamp && Date.now() - lastCalledTimestamp < 8000) {
       setShowCallAlert(true);
-      if (isSoundEnabled) {
-        playCallAlertSound();
+      if (lastCalledToken) {
+        const assignedBarber = barbers.find((b) => b.id === lastCalledToken.assignedBarberId) || barbers[0];
+        speakCustomerAnnouncement({
+          token: lastCalledToken,
+          barber: assignedBarber,
+          language,
+          chimeId: selectedChimeId,
+          voiceUri: selectedVoiceUri,
+          playChime: chimeEnabled,
+          playVoice: voiceEnabled
+        });
       }
+
       const timer = setTimeout(() => {
         setShowCallAlert(false);
       }, 8000);
       return () => clearTimeout(timer);
     }
-  }, [lastCalledTimestamp, isSoundEnabled]);
+  }, [
+    lastCalledTimestamp,
+    chimeEnabled,
+    voiceEnabled,
+    selectedChimeId,
+    selectedVoiceUri,
+    lastCalledToken,
+    barbers,
+    language
+  ]);
 
   const formattedTime = currentTime.toLocaleTimeString([], {
     hour: '2-digit',
@@ -80,7 +184,7 @@ export default function TvDisplayPage() {
   });
 
   // Waiting tokens
-  const waitingTokens = queue.filter(t => t.status === 'WAITING');
+  const waitingTokens = queue.filter((t) => t.status === 'WAITING');
 
   const waitCalc = calculateWaitTime({
     token: waitingTokens[0] || null,
@@ -91,14 +195,19 @@ export default function TvDisplayPage() {
 
   const avgWaitMinutes = waitCalc.isPaused ? 0 : waitCalc.waitMinutes;
 
+  const activeAlertToken = showCallAlert && lastCalledToken ? lastCalledToken : demoBannerToken;
+  const activeAlertBarber = activeAlertToken
+    ? barbers.find((b) => b.id === activeAlertToken.assignedBarberId)
+    : null;
+
   return (
     <div className="h-screen w-screen bg-[#FAF9F6] p-4 sm:p-6 flex flex-col justify-between overflow-hidden select-none text-[#0F0F0F]">
       
-      {/* High-Impact Slide-Down Call Announcement Banner */}
-      {showCallAlert && lastCalledToken && (
+      {/* High-Impact Slide-Down Call Announcement Banner (Works for Live Call & Voice Demo) */}
+      {activeAlertToken && (
         <CallAnnouncementBanner
-          token={lastCalledToken}
-          barber={barbers.find(b => b.id === lastCalledToken.assignedBarberId)}
+          token={activeAlertToken}
+          barber={activeAlertBarber}
         />
       )}
 
@@ -119,41 +228,47 @@ export default function TvDisplayPage() {
               </span>
             </div>
             <p className="text-[11px] text-stone-500 font-light -mt-0.5">
-              Live Lounge Floor Display & Turn Announcer
+              Live Floor Queue, Chimes & Indian Voice Announcer
             </p>
           </div>
         </div>
 
-        {/* Right Section: Sound Toggle & Digital Clock */}
-        <div className="flex items-center gap-4 sm:gap-6">
+        {/* Right Section: Audio Settings, Demo Button & Digital Clock */}
+        <div className="flex items-center gap-3 sm:gap-4">
           
-          {/* Beep / Audio Chime Toggle Button */}
+          {/* Audio Settings Modal Opener */}
           <button
-            onClick={toggleSound}
-            className={`flex items-center gap-2 px-4 py-2 rounded-full border text-xs uppercase tracking-wider font-semibold transition-all shadow-sm active:scale-95 ${
-              isSoundEnabled
-                ? 'bg-[#0F0F0F] text-white border-black hover:bg-stone-800'
-                : 'bg-stone-100 text-stone-500 border-stone-200 hover:bg-stone-200'
-            }`}
-            title="Toggle customer call beep audio alert"
+            onClick={() => setIsSettingsModalOpen(true)}
+            className="flex items-center gap-2 px-4 py-2 rounded-full border border-stone-300 bg-stone-50 hover:bg-stone-100 text-stone-800 text-xs uppercase tracking-wider font-semibold transition-all shadow-sm active:scale-95"
+            title="Configure Chime Melodies & Indian Voice Accents"
           >
-            {isSoundEnabled ? (
-              <>
-                <Volume2 className="w-4 h-4 text-[#C5A880] animate-pulse" />
-                <span>{t('tvAudioAlertOn')}</span>
-                <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-ping" />
-              </>
-            ) : (
-              <>
-                <VolumeX className="w-4 h-4 text-stone-400" />
-                <span>{t('tvAudioAlertOff')}</span>
-                <span className="w-1.5 h-1.5 rounded-full bg-rose-400" />
-              </>
-            )}
+            <Sliders className="w-3.5 h-3.5 text-[#C5A880]" />
+            <span>Audio Settings</span>
+            <div className="flex items-center gap-1 pl-1 border-l border-stone-300">
+              <span className={`w-2 h-2 rounded-full ${chimeEnabled ? 'bg-emerald-500' : 'bg-stone-300'}`} title="Chime Status" />
+              <span className={`w-2 h-2 rounded-full ${voiceEnabled ? 'bg-[#C5A880]' : 'bg-stone-300'}`} title="Voice Status" />
+            </div>
+          </button>
+
+          {/* 1-Click Demo Voice Call Button */}
+          <button
+            onClick={handlePlayVoiceDemo}
+            disabled={isDemoPlaying || (!chimeEnabled && !voiceEnabled)}
+            className={`flex items-center gap-1.5 px-4 py-2 rounded-full border text-xs uppercase tracking-wider font-semibold transition-all shadow-sm active:scale-95 ${
+              isDemoPlaying
+                ? 'bg-[#C5A880] text-black border-[#C5A880] animate-pulse cursor-wait'
+                : !chimeEnabled && !voiceEnabled
+                ? 'bg-stone-100 text-stone-400 border-stone-200 cursor-not-allowed'
+                : 'bg-[#0F0F0F] text-white border-black hover:bg-stone-800'
+            }`}
+            title="Click to trigger a sample announcement call"
+          >
+            <Play className={`w-3.5 h-3.5 fill-current ${isDemoPlaying ? 'text-black' : 'text-[#C5A880]'}`} />
+            <span>{isDemoPlaying ? t('testingVoice') : t('testVoiceDemoBtn')}</span>
           </button>
 
           {/* Digital Clock */}
-          <div className="text-right">
+          <div className="text-right pl-3 border-l border-stone-200">
             <div className="text-xl sm:text-2xl font-mono font-bold text-[#0F0F0F] text-tabular">
               {formattedTime}
             </div>
@@ -182,7 +297,7 @@ export default function TvDisplayPage() {
           <div className="grid grid-cols-2 gap-3.5 flex-1">
             {barbers.map((barber) => {
               const currentToken = barber.currentServiceToken
-                ? queue.find(t => t.id === barber.currentServiceToken)
+                ? queue.find((t) => t.id === barber.currentServiceToken)
                 : null;
 
               const isRecentlyCalled = lastCalledToken?.assignedBarberId === barber.id && showCallAlert;
@@ -221,6 +336,21 @@ export default function TvDisplayPage() {
           <span>Make Over Real-Time Queue Orchestration</span>
         </div>
       </footer>
+
+      {/* Audio Settings Modal */}
+      <TvAudioSettingsModal
+        isOpen={isSettingsModalOpen}
+        onClose={() => setIsSettingsModalOpen(false)}
+        chimeEnabled={chimeEnabled}
+        onToggleChime={handleToggleChime}
+        voiceEnabled={voiceEnabled}
+        onToggleVoice={handleToggleVoice}
+        selectedChimeId={selectedChimeId}
+        onSelectChime={handleSelectChime}
+        selectedVoiceUri={selectedVoiceUri}
+        onSelectVoice={handleSelectVoice}
+        barbers={barbers}
+      />
 
     </div>
   );
