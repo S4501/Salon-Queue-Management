@@ -162,9 +162,20 @@ export const useQueueStore = create((set, get) => {
     },
 
     // 2. Call Next Customer (Barber or Reception)
-    callNextCustomer: (barberId) => {
+    callNextCustomer: (barberId, specificTokenId = null) => {
       const state = get();
-      const barber = state.barbers.find(b => b.id === barberId);
+
+      // Dynamic Auto-Resolution: If barberId is 'ANY' or omitted, find the first available active chair
+      let targetBarberId = barberId;
+      if (!targetBarberId || targetBarberId === 'ANY') {
+        const availableBarber = state.barbers.find(b => b.status === 'AVAILABLE' && !b.currentServiceToken);
+        if (!availableBarber) {
+          throw new Error('CHAIR_ALREADY_BUSY');
+        }
+        targetBarberId = availableBarber.id;
+      }
+
+      const barber = state.barbers.find(b => b.id === targetBarberId);
       if (!barber) return null;
 
       // Chair Concurrency Guard: Cannot call if chair already has active customer in IN_SERVICE
@@ -175,20 +186,28 @@ export const useQueueStore = create((set, get) => {
         }
       }
 
-      // Smart FIFO Matching Algorithm
+      // Smart FIFO Matching Algorithm or Specific Token Dispatch
       const waitingTokens = state.queue.filter(t => t.status === 'WAITING');
       let targetToken = null;
 
-      for (const token of waitingTokens) {
-        // Preferred exact barber
-        if (token.preferredBarberId === barberId) {
-          targetToken = token;
-          break;
-        }
-        // "Any Barber" matches
-        if (token.preferredBarberId === 'ANY') {
-          targetToken = token;
-          break;
+      // If reception explicitly targeted a specific waiting token
+      if (specificTokenId) {
+        targetToken = waitingTokens.find(t => t.id === specificTokenId) || null;
+      }
+
+      // If no specific token targeted or token not found, find next eligible via FIFO
+      if (!targetToken) {
+        for (const token of waitingTokens) {
+          // Preferred exact barber
+          if (token.preferredBarberId === targetBarberId) {
+            targetToken = token;
+            break;
+          }
+          // "Any Barber" matches
+          if (token.preferredBarberId === 'ANY') {
+            targetToken = token;
+            break;
+          }
         }
       }
 
@@ -203,7 +222,7 @@ export const useQueueStore = create((set, get) => {
           return {
             ...t,
             status: 'CALLED',
-            assignedBarberId: barberId,
+            assignedBarberId: targetBarberId,
             calledAt: now
           };
         }
@@ -211,7 +230,7 @@ export const useQueueStore = create((set, get) => {
       });
 
       const updatedBarbers = state.barbers.map(b => {
-        if (b.id === barberId) {
+        if (b.id === targetBarberId) {
           return {
             ...b,
             status: 'BUSY',
@@ -225,7 +244,7 @@ export const useQueueStore = create((set, get) => {
       const calledToken = {
         ...targetToken,
         status: 'CALLED',
-        assignedBarberId: barberId,
+        assignedBarberId: targetBarberId,
         calledAt: now
       };
 

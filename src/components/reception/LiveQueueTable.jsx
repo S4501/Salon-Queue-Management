@@ -53,6 +53,69 @@ export default function LiveQueueTable({
     return acc;
   }, {});
 
+  // Identify currently available barbers (not on break and not busy with a token)
+  const availableBarbers = barbers.filter(b => b.status === 'AVAILABLE' && !b.currentServiceToken);
+
+  // Dispatch customer to chair safely
+  const handleCallCustomer = (item) => {
+    try {
+      let targetBarberId = null;
+
+      if (item.preferredBarberId === 'ANY') {
+        if (availableBarbers.length === 0) {
+          alert(
+            language === 'gu'
+              ? 'બધા સ્ટાઈલિસ્ટ હાલમાં વ્યસ્ત અથવા બ્રેક પર છે. કૃપા કરીને કોઈ ખુરશી ખાલી થાય તેની રાહ જુઓ.'
+              : 'All stylists are currently busy with clients or on break. Please wait for an available chair.'
+          );
+          return;
+        }
+        // Assign to the first available stylist (e.g. Rahul Trivedi if chair 1 & 2 are busy)
+        targetBarberId = availableBarbers[0].id;
+      } else {
+        const prefBarber = barberMap[item.preferredBarberId];
+        const isPrefAvailable = prefBarber && prefBarber.status === 'AVAILABLE' && !prefBarber.currentServiceToken;
+
+        if (isPrefAvailable) {
+          targetBarberId = prefBarber.id;
+        } else {
+          const prefName = prefBarber
+            ? (language === 'gu' && prefBarber.gujaratiName ? prefBarber.gujaratiName : prefBarber.name)
+            : 'Requested Stylist';
+
+          if (availableBarbers.length > 0) {
+            const availBarber = availableBarbers[0];
+            const availName = language === 'gu' && availBarber.gujaratiName ? availBarber.gujaratiName : availBarber.name;
+            const confirmMsg =
+              language === 'gu'
+                ? `${prefName} હાલમાં વ્યસ્ત અથવા બ્રેક પર છે. શું તમે આ ગ્રાહકને ઉપલબ્ધ સ્ટાઈલિસ્ટ ${availName} (ચેર 0${availBarber.chair}) સાથે બોલાવવા માંગો છો?`
+                : `Stylist ${prefName} is currently in service or on break. Would you like to assign this guest to available stylist ${availName} (Chair 0${availBarber.chair}) instead?`;
+
+            if (window.confirm(confirmMsg)) {
+              targetBarberId = availBarber.id;
+            } else {
+              return;
+            }
+          } else {
+            alert(
+              language === 'gu'
+                ? `${prefName} અને અન્ય તમામ સ્ટાઈલિસ્ટ હાલમાં વ્યસ્ત છે. કૃપા કરીને કોઈ ખુરશી ખાલી થાય ત્યાં સુધી રાહ જુઓ.`
+                : `Stylist ${prefName} and all other stylists are currently busy. Please wait for a chair to become available.`
+            );
+            return;
+          }
+        }
+      }
+
+      if (targetBarberId) {
+        onCallNext(targetBarberId, item.id);
+      }
+    } catch (err) {
+      console.error('Failed to call guest:', err);
+      alert(err.message || 'Unable to call guest at this time.');
+    }
+  };
+
   // Counts per tab for instant glance
   const counts = {
     ACTIVE: queue.filter(item => ['WAITING', 'CALLED', 'IN_SERVICE'].includes(item.status)).length,
@@ -240,8 +303,13 @@ export default function LiveQueueTable({
                   {isWaiting && (
                     <>
                       <button
-                        onClick={() => onCallNext(item.preferredBarberId !== 'ANY' ? item.preferredBarberId : barbers[0].id)}
-                        className="px-4 py-2 rounded-full bg-[#0F0F0F] hover:bg-[#C5A880] text-white text-[11px] uppercase tracking-wider font-semibold shadow-sm transition-all flex items-center gap-1.5"
+                        onClick={() => handleCallCustomer(item)}
+                        className="px-4 py-2 rounded-full bg-[#0F0F0F] hover:bg-[#C5A880] text-white text-[11px] uppercase tracking-wider font-semibold shadow-sm transition-all flex items-center gap-1.5 active:scale-95"
+                        title={
+                          item.preferredBarberId === 'ANY'
+                            ? (availableBarbers.length > 0 ? `Call to Chair 0${availableBarbers[0].chair} (${availableBarbers[0].name})` : 'All stylists busy')
+                            : `Call to requested stylist`
+                        }
                       >
                         <Scissors className="w-3.5 h-3.5" />
                         <span>{t('callNextBtn')}</span>

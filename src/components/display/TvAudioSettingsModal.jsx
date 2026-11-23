@@ -91,19 +91,20 @@ export default function TvAudioSettingsModal({
   };
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-md animate-fade-in">
-      <div className="bg-[#FAF9F6] rounded-3xl p-6 sm:p-8 max-w-xl w-full border border-stone-200 shadow-2xl relative text-[#0F0F0F] max-h-[92vh] overflow-y-auto">
+    <div className="fixed inset-0 z-[100] flex items-center justify-center p-3 sm:p-4 bg-black/80 backdrop-blur-md animate-fade-in">
+      <div className="bg-[#FAF9F6] rounded-3xl border border-stone-200 shadow-2xl relative text-[#0F0F0F] w-full max-w-xl max-h-[90vh] flex flex-col overflow-hidden my-auto">
         
-        {/* Close Button */}
-        <button
-          onClick={onClose}
-          className="absolute top-6 right-6 w-9 h-9 rounded-full bg-stone-200 hover:bg-stone-300 text-stone-700 flex items-center justify-center transition-colors"
-        >
-          <X className="w-4 h-4" />
-        </button>
+        {/* Sticky Modal Header (Never clips off-screen) */}
+        <div className="p-5 sm:p-6 pb-4 border-b border-stone-200 bg-[#FAF9F6] shrink-0 relative pr-14">
+          {/* Close Button */}
+          <button
+            onClick={onClose}
+            className="absolute top-5 sm:top-6 right-5 sm:right-6 w-9 h-9 rounded-full bg-stone-200 hover:bg-stone-300 text-stone-700 flex items-center justify-center transition-colors"
+            title="Close settings"
+          >
+            <X className="w-4 h-4" />
+          </button>
 
-        {/* Modal Header */}
-        <div className="mb-6">
           <span className="text-[10px] font-semibold uppercase tracking-[0.25em] text-[#C5A880] border border-[#C5A880]/30 bg-white px-3 py-1 rounded-full">
             Acoustics & Voice Settings
           </span>
@@ -115,7 +116,8 @@ export default function TvAudioSettingsModal({
           </p>
         </div>
 
-        <div className="space-y-6">
+        {/* Scrollable Content Body */}
+        <div className="p-5 sm:p-6 overflow-y-auto space-y-5 flex-1 overscroll-contain">
           
           {/* =========================================================================
               SECTION 1: CHIME ALERT SETTINGS
@@ -284,35 +286,33 @@ export default function TvAudioSettingsModal({
             )}
           </div>
 
-          {/* =========================================================================
-              SECTION 3: TEST FULL ANNOUNCEMENT & FINISH
-          ========================================================================== */}
-          <div className="pt-2 flex flex-col sm:flex-row items-center gap-3">
-            <button
-              type="button"
-              disabled={isTestPlaying || (!chimeEnabled && !voiceEnabled)}
-              onClick={handleTestFullAnnouncement}
-              className={`flex-1 w-full py-3.5 px-6 rounded-full text-xs uppercase tracking-wider font-semibold transition-all flex items-center justify-center gap-2 shadow-sm ${
-                isTestPlaying
-                  ? 'bg-[#C5A880] text-black animate-pulse'
-                  : !chimeEnabled && !voiceEnabled
-                  ? 'bg-stone-200 text-stone-400 cursor-not-allowed'
-                  : 'bg-[#0F0F0F] hover:bg-[#C5A880] text-white active:scale-95'
-              }`}
-            >
-              <Play className="w-3.5 h-3.5 fill-current" />
-              <span>{isTestPlaying ? t('testingVoice') : t('testFullCallBtn')}</span>
-            </button>
+        </div>
 
-            <button
-              type="button"
-              onClick={onClose}
-              className="w-full sm:w-auto py-3.5 px-8 rounded-full border border-stone-300 text-xs uppercase tracking-wider font-semibold text-stone-700 hover:bg-stone-100 transition-colors"
-            >
-              {t('confirm')}
-            </button>
-          </div>
+        {/* Sticky Action Footer (Always visible & docked) */}
+        <div className="p-4 sm:p-5 border-t border-stone-200 bg-[#FAF9F6] shrink-0 flex flex-col sm:flex-row items-center gap-3">
+          <button
+            type="button"
+            disabled={isTestPlaying || (!chimeEnabled && !voiceEnabled)}
+            onClick={handleTestFullAnnouncement}
+            className={`flex-1 w-full py-3 px-6 rounded-full text-xs uppercase tracking-wider font-semibold transition-all flex items-center justify-center gap-2 shadow-sm ${
+              isTestPlaying
+                ? 'bg-[#C5A880] text-black animate-pulse'
+                : !chimeEnabled && !voiceEnabled
+                ? 'bg-stone-200 text-stone-400 cursor-not-allowed'
+                : 'bg-[#0F0F0F] hover:bg-[#C5A880] text-white active:scale-95'
+            }`}
+          >
+            <Play className="w-3.5 h-3.5 fill-current" />
+            <span>{isTestPlaying ? t('testingVoice') : t('testFullCallBtn')}</span>
+          </button>
 
+          <button
+            type="button"
+            onClick={onClose}
+            className="w-full sm:w-auto py-3 px-8 rounded-full border border-stone-300 text-xs uppercase tracking-wider font-semibold text-stone-700 hover:bg-stone-100 transition-colors"
+          >
+            {t('confirm')}
+          </button>
         </div>
 
       </div>

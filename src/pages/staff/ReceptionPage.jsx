@@ -1,14 +1,21 @@
 import React, { useState } from 'react';
+import { Navigate, Link } from 'react-router-dom';
 import { useLanguage } from '../../context/LanguageContext';
 import { useQueueStore } from '../../store/useQueueStore';
 import { calculateWaitTime } from '../../utils/waitTimeCalculator';
 import LobbyOverviewSidebar from '../../components/reception/LobbyOverviewSidebar';
 import LiveQueueTable from '../../components/reception/LiveQueueTable';
 import WalkInModal from '../../components/reception/WalkInModal';
-import { UserPlus, Sparkles, Scissors, Users } from 'lucide-react';
+import { UserPlus, Sparkles, Scissors, Users, Sliders, LogOut } from 'lucide-react';
 
 export default function ReceptionPage() {
   const { language, t } = useLanguage();
+
+  // Route protection: requires preset admin authentication
+  const isAuth = typeof window !== 'undefined' && sessionStorage.getItem('makeover_admin_auth') === 'true';
+  if (!isAuth) {
+    return <Navigate to="/admin" replace />;
+  }
 
   const {
     queue,
@@ -60,14 +67,24 @@ export default function ReceptionPage() {
           </p>
         </div>
 
-        {/* Primary Walk-in Registration CTA Button */}
-        <button
-          onClick={() => setIsWalkInModalOpen(true)}
-          className="px-6 py-3.5 rounded-full bg-[#0F0F0F] hover:bg-[#C5A880] text-white font-medium text-xs uppercase tracking-[0.2em] shadow-lg active:scale-95 transition-all flex items-center justify-center gap-2"
-        >
-          <UserPlus className="w-4 h-4" />
-          <span>{t('walkInRegistrationBtn')}</span>
-        </button>
+        {/* Action Buttons: Walk-in & Admin Panel Link */}
+        <div className="flex items-center gap-3 flex-wrap">
+          <Link
+            to="/admin"
+            className="px-5 py-3.5 rounded-full border border-stone-200 text-xs font-semibold uppercase tracking-wider text-stone-700 hover:text-black hover:bg-stone-50 transition-all flex items-center gap-1.5 shadow-sm"
+          >
+            <Sliders className="w-3.5 h-3.5 text-[#C5A880]" />
+            <span>Admin Console</span>
+          </Link>
+
+          <button
+            onClick={() => setIsWalkInModalOpen(true)}
+            className="px-6 py-3.5 rounded-full bg-[#0F0F0F] hover:bg-[#C5A880] text-white font-medium text-xs uppercase tracking-[0.2em] shadow-lg active:scale-95 transition-all flex items-center justify-center gap-2"
+          >
+            <UserPlus className="w-4 h-4" />
+            <span>{t('walkInRegistrationBtn')}</span>
+          </button>
+        </div>
       </div>
 
       {/* 2-Column Split: Left 35% Sidebar, Right 65% Live Queue Dispatch */}
@@ -82,6 +99,7 @@ export default function ReceptionPage() {
             completedCount={completedCount}
             noShowCount={noShowCount}
             onToggleBarberBreak={toggleBarberBreak}
+            onCallNext={callNextCustomer}
           />
         </div>
 

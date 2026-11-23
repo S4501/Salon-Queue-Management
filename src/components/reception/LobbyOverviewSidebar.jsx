@@ -8,7 +8,8 @@ export default function LobbyOverviewSidebar({
   avgWaitMinutes,
   completedCount,
   noShowCount,
-  onToggleBarberBreak
+  onToggleBarberBreak,
+  onCallNext
 }) {
   const { language, t } = useLanguage();
 
@@ -169,6 +170,25 @@ export default function LobbyOverviewSidebar({
                     <span className="font-mono text-[10px] text-stone-500">
                       {currentToken.status}
                     </span>
+                  </div>
+                )}
+
+                {/* Available Chair Quick Call Action */}
+                {!isBreak && !isBusy && waitingCount > 0 && onCallNext && (
+                  <div className="mt-2.5 pt-2 border-t border-emerald-100 flex items-center justify-between">
+                    <span className="text-[10px] text-emerald-700 font-medium flex items-center gap-1">
+                      <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse" />
+                      {t('chairOpen')}
+                    </span>
+                    <button
+                      type="button"
+                      onClick={() => onCallNext(barber.id)}
+                      className="px-3 py-1 rounded-full bg-[#0F0F0F] hover:bg-[#C5A880] text-white text-[10px] uppercase tracking-wider font-semibold shadow-sm transition-all flex items-center gap-1 active:scale-95"
+                      title={`Call next eligible waiting guest to Chair 0${barber.chair} (${barber.name})`}
+                    >
+                      <Scissors className="w-2.5 h-2.5 text-[#C5A880]" />
+                      <span>{t('callNextBtn')}</span>
+                    </button>
                   </div>
                 )}
 

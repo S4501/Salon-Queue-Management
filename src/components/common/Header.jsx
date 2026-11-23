@@ -52,10 +52,10 @@ export default function Header() {
 
   return (
     <header className={`fixed top-0 left-0 right-0 z-50 transition-all duration-300 ${headerBackground}`}>
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-20 flex items-center justify-between">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-20 flex items-center justify-between relative">
         
         {/* Brand Monogram & Logo (MÈCHE Luxury Editorial Style) */}
-        <Link to="/" className="flex items-center gap-3 group">
+        <Link to="/" className="flex items-center gap-3 group z-10 shrink-0">
           <div className="w-10 h-10 rounded-full border border-current flex items-center justify-center transition-transform duration-500 group-hover:rotate-12">
             <span className="font-serif italic text-lg leading-none font-light">M</span>
           </div>
@@ -64,8 +64,8 @@ export default function Header() {
           </span>
         </Link>
 
-        {/* Center Editorial Navigation Links (Desktop) */}
-        <nav className="hidden lg:flex items-center gap-8 text-[11px] uppercase tracking-[0.22em] font-medium">
+        {/* Center Editorial Navigation Links (Desktop - Customer Facing Only - Perfectly Centered) */}
+        <nav className="hidden lg:flex items-center gap-8 text-[11px] uppercase tracking-[0.22em] font-medium absolute left-1/2 -translate-x-1/2 pointer-events-auto">
           {isHome ? (
             <>
               <a href="#concierge" className={`transition-colors ${navLinkColor}`}>
@@ -91,22 +91,10 @@ export default function Header() {
               </Link>
             </>
           )}
-
-          {/* Quick Staff Jump */}
-          <div className="h-3 w-px bg-current opacity-20" />
-          <Link to="/reception" className={`transition-colors opacity-70 hover:opacity-100 ${navLinkColor}`}>
-            Reception
-          </Link>
-          <Link to="/display" className={`transition-colors opacity-70 hover:opacity-100 ${navLinkColor}`}>
-            TV Screen
-          </Link>
-          <Link to="/admin" className={`transition-colors opacity-70 hover:opacity-100 ${navLinkColor}`}>
-            Admin
-          </Link>
         </nav>
 
         {/* Right CTA Actions & Language Toggle with Generous Spacing */}
-        <div className="flex items-center gap-3.5 ml-6 xl:ml-12 shrink-0">
+        <div className="flex items-center gap-2.5 sm:gap-3 ml-auto shrink-0 z-10">
 
           {/* Bilingual Language Segmented Toggle Switch */}
           <div className="flex items-center p-0.5 rounded-full border border-current/20 bg-black/5 dark:bg-white/5">
@@ -134,25 +122,6 @@ export default function Header() {
             </button>
           </div>
 
-          {/* Primary Action Button - Slim Single-Line Haute Couture Pill */}
-          {isMasterQueueOpen ? (
-            <Link
-              to="/join"
-              className={`hidden md:inline-flex items-center gap-1.5 whitespace-nowrap text-[11px] uppercase tracking-[0.16em] font-medium px-4 py-2 rounded-full transition-all duration-300 shrink-0 ${
-                !isHome || isScrolled
-                  ? 'bg-[#0F0F0F] text-white hover:bg-[#2C2925] shadow-xs'
-                  : 'bg-white text-[#0F0F0F] hover:bg-[#C5A880] hover:text-white shadow-md'
-              }`}
-            >
-              <span>{t('joinLiveQueueCTA')}</span>
-              <ArrowRight className="w-3.5 h-3.5 shrink-0" />
-            </Link>
-          ) : (
-            <span className="hidden md:inline-block text-[10px] uppercase tracking-widest px-3 py-1.5 rounded-full bg-stone-200 text-stone-600 shrink-0">
-              Paused
-            </span>
-          )}
-
           {/* Mobile Menu Button */}
           <button
             onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
@@ -165,7 +134,7 @@ export default function Header() {
 
       </div>
 
-      {/* Mobile Drawer Menu */}
+      {/* Mobile Drawer Menu (Customer Facing) */}
       {mobileMenuOpen && (
         <div className="lg:hidden bg-[#FAF9F6] border-b border-[#E7E3DC] text-[#0F0F0F] px-6 py-6 shadow-xl animate-fade-in space-y-4">
           <div className="flex flex-col space-y-3 text-xs uppercase tracking-[0.2em] font-medium">
@@ -175,15 +144,29 @@ export default function Header() {
             <Link to="/join" onClick={() => setMobileMenuOpen(false)} className="py-2 border-b border-stone-200 text-[#C5A880]">
               Join Live Queue
             </Link>
-            <Link to="/reception" onClick={() => setMobileMenuOpen(false)} className="py-2 border-b border-stone-200">
-              Reception Desk
-            </Link>
-            <Link to="/display" onClick={() => setMobileMenuOpen(false)} className="py-2 border-b border-stone-200">
-              TV Floor Screen
-            </Link>
-            <Link to="/admin" onClick={() => setMobileMenuOpen(false)} className="py-2 border-b border-stone-200">
-              Admin & Analytics
-            </Link>
+            <a href="/#concierge" onClick={() => setMobileMenuOpen(false)} className="py-2 border-b border-stone-200">
+              Live Lounge
+            </a>
+            <a href="/#services" onClick={() => setMobileMenuOpen(false)} className="py-2 border-b border-stone-200">
+              Services
+            </a>
+            <a href="/#stylists" onClick={() => setMobileMenuOpen(false)} className="py-2 border-b border-stone-200">
+              Stylists
+            </a>
+            <a href="/#location" onClick={() => setMobileMenuOpen(false)} className="py-2 border-b border-stone-200">
+              Atelier
+            </a>
+            <button
+              type="button"
+              onClick={() => {
+                setMobileMenuOpen(false);
+                setIsAudioModalOpen(true);
+              }}
+              className="py-2 border-b border-stone-200 text-left flex items-center gap-2 text-stone-700 hover:text-black"
+            >
+              <Sliders className="w-3.5 h-3.5 text-[#C5A880]" />
+              <span>Audio & Chime Settings</span>
+            </button>
           </div>
 
           <div className="pt-2">

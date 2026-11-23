@@ -65,6 +65,7 @@ export const translations = {
     fastestTag: "Fastest",
     aheadCount: "ahead",
     availableNow: "Available Now",
+    chairOpen: "Chair Open",
     onBreak: "On Break",
     busy: "In Service",
     
@@ -349,6 +350,7 @@ export const translations = {
     fastestTag: "ઝડપી",
     aheadCount: "આગળ",
     availableNow: "તુરંત ઉપલબ્ધ",
+    chairOpen: "ચેર ઉપલબ્ધ",
     onBreak: "બ્રેક પર",
     busy: "સેવા ચાલુ",
     
