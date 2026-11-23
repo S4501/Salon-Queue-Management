@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import { useLanguage } from '../../context/LanguageContext';
 import { useQueueStore } from '../../store/useQueueStore';
-import { Globe, ArrowRight, Menu, X, Clock, Sparkles } from 'lucide-react';
+import { Globe, ArrowRight, Menu, X, Clock, Sparkles, Lock } from 'lucide-react';
 
 export default function Header() {
   const { language, setLanguage, toggleLanguage, t } = useLanguage();
@@ -96,6 +96,16 @@ export default function Header() {
         {/* Right CTA Actions & Language Toggle with Generous Spacing */}
         <div className="flex items-center gap-2.5 sm:gap-3 ml-auto shrink-0 z-10">
 
+          {/* Admin Portal Direct Capsule */}
+          <Link
+            to="/admin"
+            className="flex items-center gap-1.5 px-3 py-1.5 rounded-full border border-current/20 hover:border-[#C5A880] text-[10px] uppercase tracking-wider font-semibold transition-all hover:text-[#C5A880] bg-black/5 dark:bg-white/5 active:scale-95 shadow-xs"
+            title="Open Admin Executive Console"
+          >
+            <Lock className="w-3 h-3 text-[#C5A880]" />
+            <span>Admin</span>
+          </Link>
+
           {/* Bilingual Language Segmented Toggle Switch */}
           <div className="flex items-center p-0.5 rounded-full border border-current/20 bg-black/5 dark:bg-white/5">
             <button
@@ -156,17 +166,17 @@ export default function Header() {
             <a href="/#location" onClick={() => setMobileMenuOpen(false)} className="py-2 border-b border-stone-200">
               Atelier
             </a>
-            <button
-              type="button"
-              onClick={() => {
-                setMobileMenuOpen(false);
-                setIsAudioModalOpen(true);
-              }}
-              className="py-2 border-b border-stone-200 text-left flex items-center gap-2 text-stone-700 hover:text-black"
+            <Link
+              to="/admin"
+              onClick={() => setMobileMenuOpen(false)}
+              className="py-2 border-b border-stone-200 text-left flex items-center justify-between text-stone-700 hover:text-black font-semibold"
             >
-              <Sliders className="w-3.5 h-3.5 text-[#C5A880]" />
-              <span>Audio & Chime Settings</span>
-            </button>
+              <div className="flex items-center gap-2">
+                <Lock className="w-3.5 h-3.5 text-[#C5A880]" />
+                <span>Admin Console</span>
+              </div>
+              <span className="text-[10px] uppercase tracking-wider text-stone-400">Portal</span>
+            </Link>
           </div>
 
           <div className="pt-2">
