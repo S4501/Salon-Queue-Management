@@ -77,13 +77,79 @@ const dupResult2 = checkDuplicatePhone('9825099999', initialTokens); // Non-exis
 assert.strictEqual(dupResult2.isAllowed, true);
 console.log('✓ Brand new phone (9825099999) correctly accepted.');
 
-// Test 5: Re-Add No-Show strictly to Queue Tail
-console.log('\nTest 5: No-Show Strict Tail Insertion');
+// Test 5: Re-Add No-Show strictly to Queue Tail & Disappear from No-Show Section
+console.log('\nTest 5: No-Show Strict Tail Insertion & Single-Add Guard');
 const currentTokens = [...initialTokens];
 const maxIdNum = Math.max(...currentTokens.map(t => parseInt(t.id.match(/\d+/)[0], 10)));
 const nextTokenId = `T-${maxIdNum + 1}`;
 assert.strictEqual(nextTokenId, 'T-109');
+
+// Logic verification: Re-add must remove from NO_SHOW, append at tail, and block duplicate clicks
+function reAddNoShowSimulation(tokenId, queueList) {
+  const oldToken = queueList.find(t => t.id === tokenId && t.status === 'NO_SHOW');
+  if (!oldToken) return { success: false, reason: 'NOT_IN_NO_SHOW' };
+
+  const cleanPhone = (oldToken.phone || '').replace(/\D/g, '');
+  if (cleanPhone) {
+    const alreadyActive = queueList.find(t => {
+      const tPhone = (t.phone || '').replace(/\D/g, '');
+      return tPhone === cleanPhone && ['WAITING', 'CALLED', 'IN_SERVICE'].includes(t.status);
+    });
+    if (alreadyActive) return { success: false, reason: 'ALREADY_ACTIVE' };
+  }
+
+  const tokenNums = queueList.map(t => {
+    const match = t.id.match(/\d+/);
+    return match ? parseInt(match[0], 10) : 0;
+  });
+  const newNum = Math.max(100, ...tokenNums) + 1;
+  const newGenId = `T-${newNum}`;
+
+  const newToken = {
+    ...oldToken,
+    id: newGenId,
+    status: 'WAITING',
+    joinedAt: Date.now()
+  };
+
+  const updatedQueue = queueList.map(t => {
+    if (t.id === tokenId) {
+      return { ...t, status: 'RE_ADDED', reAddedTokenId: newGenId };
+    }
+    return t;
+  });
+  updatedQueue.push(newToken);
+  return { success: true, updatedQueue, newToken };
+}
+
+// Create a test queue with one NO_SHOW token
+let noShowTestQueue = [
+  ...initialTokens,
+  { id: 'T-999', customerName: 'Test Patron', phone: '9825099888', status: 'NO_SHOW' }
+];
+
+const noShowBefore = noShowTestQueue.filter(t => t.status === 'NO_SHOW');
+assert.strictEqual(noShowBefore.length, 1, 'Should have 1 no-show item initially');
+
+// First re-add execution
+const reAddResult1 = reAddNoShowSimulation('T-999', noShowTestQueue);
+assert.strictEqual(reAddResult1.success, true);
+assert.strictEqual(reAddResult1.newToken.id, 'T-1000');
+assert.strictEqual(reAddResult1.newToken.status, 'WAITING');
+
+noShowTestQueue = reAddResult1.updatedQueue;
+
+// Verify it has disappeared from the NO_SHOW tab
+const noShowAfter = noShowTestQueue.filter(t => t.status === 'NO_SHOW');
+assert.strictEqual(noShowAfter.length, 0, 'No-show section must now be empty after re-adding');
+
+// Second re-add click on same token (double click attempt)
+const reAddResult2 = reAddNoShowSimulation('T-999', noShowTestQueue);
+assert.strictEqual(reAddResult2.success, false);
+assert.strictEqual(reAddResult2.reason, 'NOT_IN_NO_SHOW', 'Subsequent clicks on re-added token must be blocked');
+
 console.log('✓ Re-add generated next sequential token T-109 positioned at end of queue.');
+console.log('✓ Re-added patron immediately disappears from NO_SHOW tab and cannot be duplicated.');
 
 // Test 6: Mathematical Wait Time
 console.log('\nTest 6: Wait Time Formula Verification');

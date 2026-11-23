@@ -29,6 +29,17 @@ export default function LiveQueueTable({
   const { language, t } = useLanguage();
   const [filter, setFilter] = useState('ACTIVE');
   const [confirmCancelId, setConfirmCancelId] = useState(null);
+  const [reAddingTokenId, setReAddingTokenId] = useState(null);
+
+  const handleReAddNoShow = async (tokenId) => {
+    if (reAddingTokenId === tokenId) return;
+    setReAddingTokenId(tokenId);
+    try {
+      await onReAddNoShow(tokenId);
+    } finally {
+      setReAddingTokenId(null);
+    }
+  };
 
   // Barber map
   const barberMap = barbers.reduce((acc, b) => {
@@ -41,6 +52,16 @@ export default function LiveQueueTable({
     acc[s.id] = s;
     return acc;
   }, {});
+
+  // Counts per tab for instant glance
+  const counts = {
+    ACTIVE: queue.filter(item => ['WAITING', 'CALLED', 'IN_SERVICE'].includes(item.status)).length,
+    WAITING: queue.filter(item => item.status === 'WAITING').length,
+    CALLED: queue.filter(item => item.status === 'CALLED').length,
+    IN_SERVICE: queue.filter(item => item.status === 'IN_SERVICE').length,
+    COMPLETED: queue.filter(item => item.status === 'COMPLETED').length,
+    NO_SHOW: queue.filter(item => item.status === 'NO_SHOW').length,
+  };
 
   // Filtering logic
   const filteredQueue = queue.filter(item => {
@@ -61,39 +82,46 @@ export default function LiveQueueTable({
   return (
     <div className="bg-white rounded-3xl p-6 sm:p-8 border border-[#E7E3DC] shadow-sm space-y-6">
       {/* Table Header & Filter Bar */}
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-stone-100 pb-5">
-        <div>
-          <span className="text-[9px] uppercase tracking-[0.25em] text-[#C5A880] font-sans font-medium block">
-            Floor Dispatch
+      <div className="space-y-4 border-b border-stone-100 pb-5">
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2">
+          <div>
+            <span className="text-[9px] uppercase tracking-[0.25em] text-[#C5A880] font-sans font-medium block">
+              Floor Dispatch
+            </span>
+            <h3 className="font-serif text-2xl font-light text-[#0F0F0F]">
+              {t('liveQueueTitle')}
+            </h3>
+          </div>
+          <span className="text-xs text-stone-500 font-light px-3 py-1 rounded-full bg-stone-50 border border-stone-200 w-fit">
+            {filteredQueue.length} {filteredQueue.length === 1 ? 'record' : 'records'}
           </span>
-          <h3 className="font-serif text-2xl font-light text-[#0F0F0F]">
-            {t('liveQueueTitle')}
-          </h3>
-          <p className="text-xs text-stone-500 font-light mt-0.5">
-            {filteredQueue.length} records matching active filter
-          </p>
         </div>
 
-        {/* Filter Pills */}
-        <div className="flex items-center gap-1.5 overflow-x-auto pb-1 sm:pb-0">
+        {/* Filter Pills - Fits in single view with zero horizontal scrolling */}
+        <div className="flex flex-wrap items-center gap-1.5 sm:gap-2 pt-1">
           {[
-            { id: 'ACTIVE', label: 'Active Live' },
-            { id: 'WAITING', label: t('filterWaiting') },
-            { id: 'CALLED', label: t('filterCalled') },
-            { id: 'IN_SERVICE', label: t('filterInService') },
-            { id: 'COMPLETED', label: t('statusCompleted') },
-            { id: 'NO_SHOW', label: t('statusNoShow') },
+            { id: 'ACTIVE', label: 'Active Live', count: counts.ACTIVE },
+            { id: 'WAITING', label: t('filterWaiting'), count: counts.WAITING },
+            { id: 'CALLED', label: t('filterCalled'), count: counts.CALLED },
+            { id: 'IN_SERVICE', label: t('filterInService'), count: counts.IN_SERVICE },
+            { id: 'COMPLETED', label: t('statusCompleted'), count: counts.COMPLETED },
+            { id: 'NO_SHOW', label: t('statusNoShow'), count: counts.NO_SHOW },
           ].map(f => (
             <button
               key={f.id}
               onClick={() => setFilter(f.id)}
-              className={`px-3.5 py-1.5 rounded-full text-[11px] uppercase tracking-wider font-medium whitespace-nowrap transition-all ${
+              className={`px-3 py-1.5 rounded-full text-[11px] uppercase tracking-wider font-medium whitespace-nowrap transition-all flex items-center gap-1.5 ${
                 filter === f.id
-                  ? 'bg-[#0F0F0F] text-white shadow-sm'
+                  ? 'bg-[#0F0F0F] text-white shadow-xs'
                   : 'bg-[#FAF9F6] text-stone-600 hover:bg-stone-100 border border-stone-200'
               }`}
             >
-              {f.label}
+              <span>{f.label}</span>
+              <span className={`text-[10px] px-1.5 py-0.5 rounded-full font-mono ${
+                filter === f.id ? 'bg-white/20 text-white' : 'bg-stone-200/80 text-stone-700'
+              }`}>
+                {f.count}
+              </span>
             </button>
           ))}
         </div>
@@ -282,10 +310,11 @@ export default function LiveQueueTable({
                   {/* No-Show Actions (Re-Add at End) */}
                   {isNoShow && (
                     <button
-                      onClick={() => onReAddNoShow(item.id)}
-                      className="px-4 py-2 rounded-full bg-[#0F0F0F] hover:bg-[#C5A880] text-white text-[11px] uppercase tracking-wider font-semibold transition-all flex items-center gap-1.5 shadow-sm"
+                      disabled={reAddingTokenId === item.id}
+                      onClick={() => handleReAddNoShow(item.id)}
+                      className="px-4 py-2 rounded-full bg-[#0F0F0F] hover:bg-[#C5A880] text-white text-[11px] uppercase tracking-wider font-semibold transition-all flex items-center gap-1.5 shadow-sm disabled:opacity-50 disabled:cursor-not-allowed"
                     >
-                      <RotateCcw className="w-3.5 h-3.5" />
+                      <RotateCcw className={`w-3.5 h-3.5 ${reAddingTokenId === item.id ? 'animate-spin' : ''}`} />
                       <span>{t('reAddBtn')}</span>
                     </button>
                   )}

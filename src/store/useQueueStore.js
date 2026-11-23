@@ -362,8 +362,22 @@ export const useQueueStore = create((set, get) => {
     // 6. Re-Add Customer from No-Show (Strictly at tail end of queue)
     reAddNoShow: (tokenId) => {
       const state = get();
-      const oldToken = state.queue.find(t => t.id === tokenId);
-      if (!oldToken) return;
+      // Only allow re-adding if token exists and is currently in NO_SHOW status
+      const oldToken = state.queue.find(t => t.id === tokenId && t.status === 'NO_SHOW');
+      if (!oldToken) return null;
+
+      // Duplicate prevention: check if customer phone is already active in queue
+      const cleanPhone = (oldToken.phone || '').replace(/\D/g, '');
+      if (cleanPhone) {
+        const alreadyActive = state.queue.find(t => {
+          const tPhone = (t.phone || '').replace(/\D/g, '');
+          return tPhone === cleanPhone && ['WAITING', 'CALLED', 'IN_SERVICE'].includes(t.status);
+        });
+        if (alreadyActive) {
+          console.warn(`Customer with phone ${cleanPhone} is already active in queue with token ${alreadyActive.id}`);
+          return null;
+        }
+      }
 
       const tokenNumbers = state.queue.map(t => {
         const match = t.id.match(/\d+/);
@@ -384,7 +398,32 @@ export const useQueueStore = create((set, get) => {
         assignedBarberId: null
       };
 
-      const updatedQueue = [...state.queue, newToken];
+      // Mark the old token as RE_ADDED so it immediately disappears from the NO_SHOW tab
+      const updatedQueue = state.queue.map(t => {
+        if (t.id === tokenId) {
+          return {
+            ...t,
+            status: 'RE_ADDED',
+            reAddedAt: Date.now(),
+            reAddedTokenId: newId
+          };
+        }
+        return t;
+      });
+
+      // Insert new token strictly at the tail of the waiting line
+      updatedQueue.push(newToken);
+
+      // Update cached customer token in localStorage if it belonged to this client
+      try {
+        const storedToken = localStorage.getItem('glamoursync_last_token');
+        if (storedToken === tokenId) {
+          localStorage.setItem('glamoursync_last_token', newId);
+        }
+      } catch (err) {
+        // ignore
+      }
+
       state._commit({ queue: updatedQueue }, 'RE_ADDED');
       return newToken;
     },

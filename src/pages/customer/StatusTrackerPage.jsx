@@ -70,6 +70,13 @@ export default function StatusTrackerPage() {
     }
   }, [position, token?.status]);
 
+  // Auto-redirect if this token was re-added as a new sequential token
+  useEffect(() => {
+    if (token?.status === 'RE_ADDED' && token?.reAddedTokenId) {
+      navigate(`/status/${token.reAddedTokenId}`, { replace: true });
+    }
+  }, [token?.status, token?.reAddedTokenId, navigate]);
+
   if (!token) {
     return (
       <div className="max-w-md mx-auto px-4 py-16 text-center space-y-4">
@@ -87,6 +94,29 @@ export default function StatusTrackerPage() {
           className="inline-block px-5 py-2.5 rounded-xl bg-[#12183A] text-white text-xs font-bold"
         >
           {t('backToHome')}
+        </Link>
+      </div>
+    );
+  }
+
+  // Gracefully handle tokens that have been re-added under a new ID
+  if (token.status === 'RE_ADDED' && token.reAddedTokenId) {
+    return (
+      <div className="max-w-md mx-auto px-4 py-16 text-center space-y-4">
+        <div className="w-16 h-16 rounded-2xl bg-[#FFF1ED] text-[#C5A880] flex items-center justify-center mx-auto">
+          <Clock className="w-8 h-8 animate-spin" />
+        </div>
+        <h2 className="text-xl font-bold text-[#12183A]">
+          Queue Spot Reinstated
+        </h2>
+        <p className="text-xs text-[#595F72]">
+          Your token has been re-added to the live queue as <strong className="text-[#12183A]">#{token.reAddedTokenId}</strong>. Redirecting to your live tracker...
+        </p>
+        <Link
+          to={`/status/${token.reAddedTokenId}`}
+          className="inline-block px-5 py-2.5 rounded-xl bg-[#0F0F0F] text-white text-xs font-bold"
+        >
+          View Updated Token #{token.reAddedTokenId} →
         </Link>
       </div>
     );

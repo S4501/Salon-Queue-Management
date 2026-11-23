@@ -55,12 +55,6 @@ export default function HomePage() {
 
   const avgWaitTime = waitCalc.isPaused ? 0 : waitCalc.waitMinutes;
 
-  // Check if client has a cached active token in localStorage
-  const lastActiveTokenId = localStorage.getItem('glamoursync_last_token');
-  const activeExistingToken = lastActiveTokenId
-    ? queue.find(t => t.id === lastActiveTokenId && ['WAITING', 'CALLED', 'IN_SERVICE'].includes(t.status))
-    : null;
-
   // Track token modal search handler
   const handleTrackSubmit = (e) => {
     e.preventDefault();
@@ -70,11 +64,24 @@ export default function HomePage() {
 
     const cleanDigits = query.replace(/\D/g, '').slice(-10);
 
-    const found = queue.find(t => {
+    const activeTokens = queue.filter(t => ['WAITING', 'CALLED', 'IN_SERVICE'].includes(t.status));
+    let found = activeTokens.find(t => {
+      if (t.id.toLowerCase() === query.toLowerCase()) return true;
+      if (cleanDigits && t.phone && t.phone.replace(/\D/g, '').slice(-10) === cleanDigits) return true;
+      return false;
+    }) || queue.find(t => {
       if (t.id.toLowerCase() === query.toLowerCase()) return true;
       if (cleanDigits && t.phone && t.phone.replace(/\D/g, '').slice(-10) === cleanDigits) return true;
       return false;
     });
+
+    // If matching an old token that was re-added, route directly to the active replacement
+    if (found && found.status === 'RE_ADDED' && found.reAddedTokenId) {
+      const activeReplacement = queue.find(t => t.id === found.reAddedTokenId);
+      if (activeReplacement) {
+        found = activeReplacement;
+      }
+    }
 
     if (found) {
       setIsTrackModalOpen(false);
@@ -114,29 +121,6 @@ export default function HomePage() {
 
         {/* Multi-stop Haute Couture Vignette Overlay */}
         <div className="absolute inset-0 bg-gradient-to-b from-black/70 via-black/35 to-black/85 pointer-events-none" />
-
-        {/* Floating Active Ticket Pill if user already has an active spot */}
-        {activeExistingToken && (
-          <div className="absolute top-24 sm:top-28 z-30 max-w-lg w-[90%] mx-auto bg-black/80 backdrop-blur-md border border-[#C5A880]/60 rounded-full py-2.5 px-5 flex items-center justify-between text-white shadow-2xl animate-fade-in">
-            <div className="flex items-center gap-3">
-              <span className="w-2.5 h-2.5 rounded-full bg-[#C5A880] animate-ping" />
-              <div className="text-left">
-                <p className="text-xs font-semibold tracking-wider uppercase text-[#C5A880]">
-                  Active Reservation: {activeExistingToken.id}
-                </p>
-                <p className="text-[10px] text-stone-300">
-                  Status: {activeExistingToken.status}
-                </p>
-              </div>
-            </div>
-            <Link
-              to={`/status/${activeExistingToken.id}`}
-              className="text-[10px] uppercase tracking-widest font-bold bg-[#C5A880] text-black px-4 py-1.5 rounded-full hover:bg-white transition-colors"
-            >
-              View Ticket →
-            </Link>
-          </div>
-        )}
 
         {/* Hero Content Box */}
         <div className="relative z-20 max-w-4xl mx-auto px-6 text-center text-white space-y-6 pt-12">
@@ -179,25 +163,25 @@ export default function HomePage() {
             </div>
           </div>
 
-          {/* Dual Action CTAs */}
-          <div className="pt-4 flex flex-col sm:flex-row items-center justify-center gap-4 max-w-md mx-auto">
+          {/* Dual Action CTAs - Slim Haute Couture Capsules */}
+          <div className="pt-4 flex flex-col sm:flex-row items-center justify-center gap-3.5 max-w-lg mx-auto">
             {isMasterQueueOpen ? (
               <Link
                 to="/join"
-                className="w-full sm:w-auto flex-1 py-4 px-8 rounded-full bg-white text-[#0F0F0F] hover:bg-[#C5A880] hover:text-white uppercase text-xs tracking-[0.22em] font-semibold transition-all duration-300 shadow-xl flex items-center justify-center gap-2 group"
+                className="w-full sm:w-auto py-2.5 px-6 rounded-full bg-white text-[#0F0F0F] hover:bg-[#C5A880] hover:text-white uppercase text-[11px] tracking-[0.18em] font-semibold transition-all duration-300 shadow-md flex items-center justify-center gap-2 group whitespace-nowrap"
               >
                 <span>{t('joinLiveQueueCTA')}</span>
                 <ArrowRight className="w-3.5 h-3.5 transition-transform group-hover:translate-x-1" />
               </Link>
             ) : (
-              <div className="w-full sm:w-auto flex-1 py-4 px-8 rounded-full bg-stone-800 text-stone-400 uppercase text-xs tracking-[0.22em] font-semibold text-center cursor-not-allowed">
+              <div className="w-full sm:w-auto py-2.5 px-6 rounded-full bg-stone-800 text-stone-400 uppercase text-[11px] tracking-[0.18em] font-semibold text-center cursor-not-allowed whitespace-nowrap">
                 {t('queuePausedNotice')}
               </div>
             )}
 
             <button
               onClick={() => setIsTrackModalOpen(true)}
-              className="w-full sm:w-auto py-4 px-8 rounded-full border border-white/60 bg-white/10 hover:bg-white hover:text-black text-white backdrop-blur-sm uppercase text-xs tracking-[0.22em] font-semibold transition-all duration-300 flex items-center justify-center gap-2"
+              className="w-full sm:w-auto py-2.5 px-6 rounded-full border border-white/60 bg-white/10 hover:bg-white hover:text-black text-white backdrop-blur-sm uppercase text-[11px] tracking-[0.18em] font-semibold transition-all duration-300 flex items-center justify-center gap-2 whitespace-nowrap"
             >
               <Search className="w-3.5 h-3.5" />
               <span>{t('trackExistingCTA')}</span>
@@ -512,46 +496,6 @@ export default function HomePage() {
         </div>
       </section>
 
-
-      {/* =========================================================================
-          SECTION 6: EDITORIAL ACCLAIM & PRESS
-      ========================================================================== */}
-      <section className="py-20 bg-[#FAF9F6] border-b border-[#E7E3DC]">
-        <div className="max-w-5xl mx-auto px-6 text-center space-y-10">
-          <span className="text-xs uppercase tracking-[0.3em] text-[#C5A880] font-medium font-sans">
-            {t('pressAcclaimTitle')}
-          </span>
-
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-10 text-left">
-            <div className="border-l-2 border-[#C5A880] pl-6 space-y-3">
-              <p className="font-serif italic text-lg sm:text-xl text-[#0F0F0F] font-light leading-relaxed">
-                {t('pressQuote1')}
-              </p>
-              <span className="text-[10px] uppercase tracking-[0.2em] text-stone-500 font-sans block">
-                — Editorial Review
-              </span>
-            </div>
-
-            <div className="border-l-2 border-[#C5A880] pl-6 space-y-3">
-              <p className="font-serif italic text-lg sm:text-xl text-[#0F0F0F] font-light leading-relaxed">
-                {t('pressQuote2')}
-              </p>
-              <span className="text-[10px] uppercase tracking-[0.2em] text-stone-500 font-sans block">
-                — Salon Innovation Journal
-              </span>
-            </div>
-          </div>
-
-          {/* Minimalist Monochrome Magazine Logos */}
-          <div className="pt-6 flex flex-wrap items-center justify-center gap-8 sm:gap-14 opacity-50 grayscale hover:opacity-90 transition-opacity text-xs font-serif tracking-[0.3em] uppercase">
-            <span>VOGUE</span>
-            <span>HARPER'S BAZAAR</span>
-            <span>ELLE</span>
-            <span>ALLURE</span>
-            <span>GQ</span>
-          </div>
-        </div>
-      </section>
 
 
       {/* =========================================================================
