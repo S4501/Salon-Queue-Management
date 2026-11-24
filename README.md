@@ -1,3 +1,9 @@
+# Salon Queue Management System
+# **Live demo:** https://salon-queue-sagarchikhaliya.vercel.app
+# **Admin Id:** admin
+# **Password:** makeover2026
+# **Hosted on:** Vercel
+
 # GlamourSync — Real-Time Salon Queue & Floor Management
 
 > Dedicated real-time queue orchestration and floor management web application engineered for modern unisex salons, barbershops, and beauty studios.
