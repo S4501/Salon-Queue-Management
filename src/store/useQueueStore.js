@@ -29,9 +29,29 @@ function loadPersistedState() {
           }
           return pb;
         });
+        // Sync service details from initialServices unless custom edited by admin
+        const syncedServices = parsed.services.map(ps => {
+          if (ps.customEdited) {
+            return ps;
+          }
+          const fresh = initialServices.find(is => is.id === ps.id);
+          if (fresh) {
+            return {
+              ...ps,
+              name: fresh.name,
+              gujaratiName: fresh.gujaratiName,
+              duration: fresh.duration,
+              price: fresh.price,
+              category: fresh.category
+            };
+          }
+          return ps;
+        });
+
         return {
           ...parsed,
-          barbers: syncedBarbers
+          barbers: syncedBarbers,
+          services: syncedServices
         };
       }
     }

@@ -51,7 +51,7 @@ export const initialServices = [
     name: "Classic Haircut & Styling",
     gujaratiName: "ક્લાસિક હેરકટ અને સ્ટાઇલિંગ",
     duration: 30,
-    price: 250,
+    price: 500,
     category: "Hair",
     active: true
   },
@@ -60,7 +60,7 @@ export const initialServices = [
     name: "Beard Trim & Shape",
     gujaratiName: "દાઢી ટ્રીમ અને શેપિંગ",
     duration: 20,
-    price: 150,
+    price: 350,
     category: "Beard",
     active: true
   },
@@ -69,7 +69,7 @@ export const initialServices = [
     name: "Luxury Hot Towel Shave",
     gujaratiName: "લક્ઝરી હોટ ટોવેલ શેવ",
     duration: 25,
-    price: 200,
+    price: 450,
     category: "Shaving",
     active: true
   },
@@ -78,7 +78,7 @@ export const initialServices = [
     name: "Nourishing Hair Spa",
     gujaratiName: "નરિશિંગ હેર સ્પા",
     duration: 45,
-    price: 600,
+    price: 750,
     category: "Treatment",
     active: true
   },
@@ -87,7 +87,7 @@ export const initialServices = [
     name: "Relaxing Head Massage",
     gujaratiName: "રિલેક્સિંગ હેડ મસાજ",
     duration: 20,
-    price: 200,
+    price: 400,
     category: "Massage",
     active: true
   },
@@ -96,7 +96,7 @@ export const initialServices = [
     name: "De-Tan & Glow Facial",
     gujaratiName: "ડી-ટેન અને ગ્લો ફેશિયલ",
     duration: 35,
-    price: 500,
+    price: 900,
     category: "Skincare",
     active: true
   },
@@ -105,7 +105,7 @@ export const initialServices = [
     name: "Premium Hair Color",
     gujaratiName: "પ્રીમિયમ હેર કલર",
     duration: 45,
-    price: 750,
+    price: 1200,
     category: "Hair",
     active: true
   },
@@ -114,7 +114,7 @@ export const initialServices = [
     name: "Royal Grooming Combo",
     gujaratiName: "રોયલ ગ્રૂમિંગ કોમ્બો",
     duration: 60,
-    price: 900,
+    price: 2100,
     category: "Combo",
     active: true
   }

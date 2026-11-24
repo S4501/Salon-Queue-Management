@@ -65,7 +65,8 @@ export default function ServiceCatalogManager({
       duration: Number(editingService.duration),
       price: Number(editingService.price),
       category: editingService.category || 'Hair',
-      active: editingService.active
+      active: editingService.active,
+      customEdited: true
     });
     setEditingService(null);
   };
