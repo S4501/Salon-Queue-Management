@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { useLanguage } from '../../context/LanguageContext';
-import { Plus, Coffee, Trash2 } from 'lucide-react';
+import { Plus, Coffee, Trash2, Edit2, X, Image as ImageIcon } from 'lucide-react';
 
 export default function BarberRosterManager({
   barbers,
@@ -10,6 +10,7 @@ export default function BarberRosterManager({
 }) {
   const { language, t } = useLanguage();
   const [isAddOpen, setIsAddOpen] = useState(false);
+  const [editingBarber, setEditingBarber] = useState(null);
 
   const [form, setForm] = useState({
     name: '',
@@ -24,9 +25,35 @@ export default function BarberRosterManager({
     if (!form.name) return;
     onAddBarber({
       ...form,
-      chair: Number(form.chair)
+      chair: Number(form.chair),
+      customEdited: true
     });
     setIsAddOpen(false);
+  };
+
+  const handleOpenEdit = (b) => {
+    setEditingBarber({
+      id: b.id,
+      name: b.name || '',
+      gujaratiName: b.gujaratiName || '',
+      chair: b.chair || 1,
+      specialty: b.specialty || '',
+      avatar: b.avatar || '/images/artists/chris-mcmillan.jpg'
+    });
+  };
+
+  const handleSaveEdit = (e) => {
+    e.preventDefault();
+    if (!editingBarber || !editingBarber.name) return;
+    onUpdateBarber(editingBarber.id, {
+      name: editingBarber.name.trim(),
+      gujaratiName: (editingBarber.gujaratiName || '').trim(),
+      chair: Number(editingBarber.chair),
+      specialty: (editingBarber.specialty || '').trim(),
+      avatar: (editingBarber.avatar || '').trim(),
+      customEdited: true
+    });
+    setEditingBarber(null);
   };
 
   return (
@@ -86,9 +113,18 @@ export default function BarberRosterManager({
                 </div>
               </div>
 
-              <div className="flex items-center gap-2">
+              <div className="flex items-center gap-2 flex-wrap sm:flex-nowrap justify-end">
                 <button
-                  onClick={() => onUpdateBarber(b.id, { status: isBreak ? 'AVAILABLE' : 'ON_BREAK' })}
+                  onClick={() => handleOpenEdit(b)}
+                  className="px-3 py-1.5 rounded-xl border border-stone-200 text-xs font-semibold text-stone-700 hover:text-black hover:bg-stone-50 transition-all flex items-center gap-1.5 shadow-2xs"
+                  title={t('editBtn')}
+                >
+                  <Edit2 className="w-3 h-3 text-[#C5A880]" />
+                  <span>{t('editBtn')}</span>
+                </button>
+
+                <button
+                  onClick={() => onUpdateBarber(b.id, { status: isBreak ? 'AVAILABLE' : 'ON_BREAK', customEdited: true })}
                   className={`px-3 py-1.5 rounded-xl text-xs font-bold transition-all ${
                     isBreak
                       ? 'bg-emerald-600 text-white'
@@ -97,11 +133,158 @@ export default function BarberRosterManager({
                 >
                   {isBreak ? t('resumeShiftBtn') : t('toggleBreakBtn')}
                 </button>
+
+                {barbers.length > 1 && (
+                  <button
+                    onClick={() => {
+                      if (window.confirm(`Are you sure you want to remove ${b.name} from the active roster?`)) {
+                        onDeleteBarber(b.id);
+                      }
+                    }}
+                    className="p-1.5 rounded-xl text-rose-500 hover:bg-rose-50 transition-colors"
+                    title={t('deleteBtn')}
+                  >
+                    <Trash2 className="w-3.5 h-3.5" />
+                  </button>
+                )}
               </div>
             </div>
           );
         })}
       </div>
+
+      {/* Edit Barber Modal */}
+      {editingBarber && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-[#0F0F0F]/60 backdrop-blur-sm animate-fadeIn">
+          <div className="bg-white rounded-3xl p-6 sm:p-8 max-w-md w-full border border-[#E7E3DC] shadow-2xl space-y-5">
+            <div className="flex items-center justify-between border-b border-stone-100 pb-3">
+              <div>
+                <span className="text-[9px] uppercase tracking-[0.25em] text-[#C5A880] font-sans font-medium block">
+                  Stylist Profile
+                </span>
+                <h4 className="font-serif text-xl font-light text-[#0F0F0F] mt-0.5">
+                  Edit Stylist Details
+                </h4>
+              </div>
+              <button
+                onClick={() => setEditingBarber(null)}
+                className="p-1.5 rounded-full text-stone-400 hover:text-stone-700 hover:bg-stone-100 transition-colors"
+              >
+                <X className="w-4 h-4" />
+              </button>
+            </div>
+
+            <form onSubmit={handleSaveEdit} className="space-y-4 text-xs">
+              {/* Live Avatar Preview */}
+              <div className="flex items-center gap-4 p-3 rounded-2xl bg-[#FAF9F6] border border-stone-200">
+                <img
+                  src={editingBarber.avatar || '/images/artists/chris-mcmillan.jpg'}
+                  alt={editingBarber.name}
+                  className="w-14 h-14 rounded-full object-cover border-2 border-[#C5A880] shadow-sm"
+                  onError={(e) => {
+                    e.currentTarget.src = '/images/artists/chris-mcmillan.jpg';
+                  }}
+                />
+                <div className="flex-1 min-w-0">
+                  <p className="font-medium text-[#0F0F0F] text-xs truncate">
+                    {editingBarber.name || 'Stylist Preview'}
+                  </p>
+                  <p className="text-[11px] text-stone-500 truncate">
+                    Station #{editingBarber.chair} • {editingBarber.specialty}
+                  </p>
+                  <span className="text-[9px] text-[#C5A880] uppercase tracking-wider font-semibold">
+                    Live Photo Preview
+                  </span>
+                </div>
+              </div>
+
+              <div>
+                <label className="block font-medium text-stone-700 uppercase tracking-wider text-[10px] mb-1">
+                  Stylist Name (English) *
+                </label>
+                <input
+                  type="text"
+                  required
+                  value={editingBarber.name}
+                  onChange={(e) => setEditingBarber({ ...editingBarber, name: e.target.value })}
+                  className="w-full px-3.5 py-2.5 rounded-xl border border-stone-200 outline-none focus:border-[#C5A880] bg-[#FAF9F6] text-[#0F0F0F] transition-colors"
+                />
+              </div>
+
+              <div>
+                <label className="block font-medium text-stone-700 uppercase tracking-wider text-[10px] mb-1">
+                  Stylist Name (Gujarati)
+                </label>
+                <input
+                  type="text"
+                  value={editingBarber.gujaratiName}
+                  onChange={(e) => setEditingBarber({ ...editingBarber, gujaratiName: e.target.value })}
+                  className="w-full px-3.5 py-2.5 rounded-xl border border-stone-200 outline-none focus:border-[#C5A880] bg-[#FAF9F6] text-[#0F0F0F] transition-colors"
+                />
+              </div>
+
+              <div className="grid grid-cols-2 gap-3">
+                <div>
+                  <label className="block font-medium text-stone-700 uppercase tracking-wider text-[10px] mb-1">
+                    Station / Chair #
+                  </label>
+                  <input
+                    type="number"
+                    min="1"
+                    max="20"
+                    required
+                    value={editingBarber.chair}
+                    onChange={(e) => setEditingBarber({ ...editingBarber, chair: e.target.value })}
+                    className="w-full px-3.5 py-2.5 rounded-xl border border-stone-200 outline-none focus:border-[#C5A880] bg-[#FAF9F6] text-[#0F0F0F]"
+                  />
+                </div>
+
+                <div>
+                  <label className="block font-medium text-stone-700 uppercase tracking-wider text-[10px] mb-1">
+                    Specialty / Role
+                  </label>
+                  <input
+                    type="text"
+                    required
+                    value={editingBarber.specialty}
+                    onChange={(e) => setEditingBarber({ ...editingBarber, specialty: e.target.value })}
+                    className="w-full px-3.5 py-2.5 rounded-xl border border-stone-200 outline-none focus:border-[#C5A880] bg-[#FAF9F6] text-[#0F0F0F]"
+                  />
+                </div>
+              </div>
+
+              <div>
+                <label className="block font-medium text-stone-700 uppercase tracking-wider text-[10px] mb-1">
+                  Photo URL or Image Path
+                </label>
+                <input
+                  type="text"
+                  value={editingBarber.avatar}
+                  placeholder="/images/artists/chris-mcmillan.jpg or https://..."
+                  onChange={(e) => setEditingBarber({ ...editingBarber, avatar: e.target.value })}
+                  className="w-full px-3.5 py-2.5 rounded-xl border border-stone-200 outline-none focus:border-[#C5A880] bg-[#FAF9F6] text-[#0F0F0F] font-mono text-[11px]"
+                />
+              </div>
+
+              <div className="flex items-center justify-end gap-2 pt-4 border-t border-stone-100">
+                <button
+                  type="button"
+                  onClick={() => setEditingBarber(null)}
+                  className="px-5 py-2.5 rounded-full border border-stone-200 font-medium text-stone-600 hover:bg-stone-50 transition-colors uppercase tracking-wider text-[10px]"
+                >
+                  {t('cancel')}
+                </button>
+                <button
+                  type="submit"
+                  className="px-6 py-2.5 rounded-full bg-[#0F0F0F] hover:bg-[#C5A880] text-white font-semibold uppercase tracking-wider text-[10px] transition-colors shadow-sm"
+                >
+                  {t('save')}
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
+      )}
 
       {/* Add Barber Modal */}
       {isAddOpen && (

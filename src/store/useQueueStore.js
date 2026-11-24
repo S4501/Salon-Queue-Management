@@ -12,8 +12,11 @@ function loadPersistedState() {
     if (raw) {
       const parsed = JSON.parse(raw);
       if (parsed.queue && parsed.barbers && parsed.services) {
-        // Sync artist details (names, avatars, specialties) from initialBarbers so updates reflect immediately
+        // Sync artist details from initialBarbers unless custom edited by admin
         const syncedBarbers = parsed.barbers.map(pb => {
+          if (pb.customEdited) {
+            return pb;
+          }
           const fresh = initialBarbers.find(ib => ib.id === pb.id);
           if (fresh) {
             return {
