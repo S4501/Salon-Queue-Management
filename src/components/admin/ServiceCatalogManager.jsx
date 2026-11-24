@@ -108,8 +108,6 @@ export default function ServiceCatalogManager({
           </thead>
           <tbody className="divide-y divide-[#F3E8E2]">
             {services.map((srv) => {
-              const isEditing = editingServiceId === srv.id;
-
               return (
                 <tr key={srv.id} className="hover:bg-slate-50/50">
                   <td className="py-3 px-2 font-bold text-[#12183A]">
