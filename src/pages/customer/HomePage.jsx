@@ -99,25 +99,12 @@ export default function HomePage() {
       ========================================================================== */}
       <section className="relative w-full h-[95vh] min-h-[640px] flex items-center justify-center overflow-hidden bg-black">
 
-        {/* Ambient Video Background */}
-        <video
-          autoPlay
-          loop
-          muted
-          playsInline
-          preload="auto"
-          poster="https://images.unsplash.com/photo-1560066984-138dadb4c035?auto=format&fit=crop&w=1920&q=80"
-          className="absolute inset-0 w-full h-full object-cover opacity-85 scale-105 transition-transform duration-1000 ease-out"
-        >
-          <source
-            src="https://assets.mixkit.co/videos/preview/mixkit-hairdresser-washing-a-clients-hair-in-a-salon-41544-large.mp4"
-            type="video/mp4"
-          />
-          <source
-            src="https://assets.mixkit.co/videos/preview/mixkit-stylist-cutting-hair-with-scissors-and-a-comb-41543-large.mp4"
-            type="video/mp4"
-          />
-        </video>
+        {/* Ambient Luxury Atelier Hero Background (Works flawlessly across all iOS, Android & Desktop without native media player play buttons) */}
+        <img
+          src="https://images.unsplash.com/photo-1585747860715-2ba37e788b70?auto=format&fit=crop&w=2000&q=85"
+          alt="Make Over Luxury Hair Atelier"
+          className="absolute inset-0 w-full h-full object-cover opacity-75 scale-105 transition-transform duration-1000 ease-out grayscale contrast-125"
+        />
 
         {/* Multi-stop Haute Couture Vignette Overlay */}
         <div className="absolute inset-0 bg-gradient-to-b from-black/70 via-black/35 to-black/85 pointer-events-none" />
@@ -560,9 +547,9 @@ export default function HomePage() {
           <div className="lg:col-span-6">
             <div className="rounded-3xl overflow-hidden aspect-[4/3] border border-[#E7E3DC] shadow-xl bg-stone-900 relative">
               <img
-                src="https://images.unsplash.com/photo-1522337360788-8b13dee7a37e?auto=format&fit=crop&w=1200&q=80"
+                src="https://images.unsplash.com/photo-1521590832167-7bcbfaa6381f?auto=format&fit=crop&w=1200&q=80"
                 alt="Make Over Hair Atelier"
-                className="w-full h-full object-cover grayscale contrast-110"
+                className="w-full h-full object-cover contrast-105"
               />
               <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-transparent to-black/30" />
               <div className="absolute bottom-6 left-6 right-6 text-white">

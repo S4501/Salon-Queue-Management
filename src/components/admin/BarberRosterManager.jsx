@@ -16,7 +16,7 @@ export default function BarberRosterManager({
     gujaratiName: '',
     chair: barbers.length + 1,
     specialty: 'Styling & Grooming',
-    avatar: 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=250&q=80'
+    avatar: 'https://images.unsplash.com/photo-1621605815971-fbc98d665033?auto=format&fit=crop&w=400&q=80'
   });
 
   const handleSave = (e) => {

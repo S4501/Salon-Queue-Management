@@ -12,7 +12,15 @@ function loadPersistedState() {
     if (raw) {
       const parsed = JSON.parse(raw);
       if (parsed.queue && parsed.barbers && parsed.services) {
-        return parsed;
+        // Automatically sync fresh stylist avatars if seed data updated
+        const updatedBarbers = parsed.barbers.map(b => {
+          const fresh = initialBarbers.find(ib => ib.id === b.id);
+          return fresh ? { ...b, avatar: fresh.avatar } : b;
+        });
+        return {
+          ...parsed,
+          barbers: updatedBarbers
+        };
       }
     }
   } catch (err) {
