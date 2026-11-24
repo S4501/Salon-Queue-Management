@@ -99,25 +99,12 @@ export default function HomePage() {
       ========================================================================== */}
       <section className="relative w-full h-[95vh] min-h-[640px] flex items-center justify-center overflow-hidden bg-black">
 
-        {/* Ambient Video Background */}
-        <video
-          autoPlay
-          loop
-          muted
-          playsInline
-          preload="auto"
-          poster="https://images.unsplash.com/photo-1560066984-138dadb4c035?auto=format&fit=crop&w=1920&q=80"
-          className="absolute inset-0 w-full h-full object-cover opacity-85 scale-105 transition-transform duration-1000 ease-out"
-        >
-          <source
-            src="https://assets.mixkit.co/videos/preview/mixkit-hairdresser-washing-a-clients-hair-in-a-salon-41544-large.mp4"
-            type="video/mp4"
-          />
-          <source
-            src="https://assets.mixkit.co/videos/preview/mixkit-stylist-cutting-hair-with-scissors-and-a-comb-41543-large.mp4"
-            type="video/mp4"
-          />
-        </video>
+        {/* Hero Background Photo */}
+        <img
+          src="https://images.unsplash.com/photo-1560066984-138dadb4c035?auto=format&fit=crop&w=1920&q=80"
+          alt="Make Over Luxury Unisex Salon & Atelier"
+          className="absolute inset-0 w-full h-full object-cover opacity-85 scale-105"
+        />
 
         {/* Multi-stop Haute Couture Vignette Overlay */}
         <div className="absolute inset-0 bg-gradient-to-b from-black/70 via-black/35 to-black/85 pointer-events-none" />
@@ -132,9 +119,18 @@ export default function HomePage() {
           </div>
 
           {/* Grand Haute Couture Title */}
-          <h1 className="font-serif text-5xl sm:text-7xl lg:text-8xl font-light tracking-[0.25em] uppercase text-white leading-tight">
-            {t('brandName')}
-          </h1>
+          <div className="space-y-3">
+            <h1 className="font-serif text-5xl sm:text-7xl lg:text-8xl font-light tracking-[0.25em] uppercase text-white leading-tight">
+              {t('brandName')}
+            </h1>
+            <div className="flex items-center justify-center gap-3">
+              <span className="h-px w-8 sm:w-12 bg-[#C5A880]/60" />
+              <span className="text-[10px] sm:text-xs uppercase tracking-[0.35em] text-[#C5A880] font-sans font-medium">
+                UNISEX SALON & ATELIER
+              </span>
+              <span className="h-px w-8 sm:w-12 bg-[#C5A880]/60" />
+            </div>
+          </div>
 
           {/* Tagline & Subtagline */}
           <p className="font-serif italic text-lg sm:text-2xl text-stone-200/95 max-w-2xl mx-auto font-light leading-relaxed">
@@ -560,13 +556,13 @@ export default function HomePage() {
           <div className="lg:col-span-6">
             <div className="rounded-3xl overflow-hidden aspect-[4/3] border border-[#E7E3DC] shadow-xl bg-stone-900 relative">
               <img
-                src="https://images.unsplash.com/photo-1522337360788-8b13dee7a37e?auto=format&fit=crop&w=1200&q=80"
+                src="/images/atelier/atelier-visit.jpg"
                 alt="Make Over Hair Atelier"
                 className="w-full h-full object-cover grayscale contrast-110"
               />
               <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-transparent to-black/30" />
               <div className="absolute bottom-6 left-6 right-6 text-white">
-                <p className="font-serif text-xl font-light">Make Over Atelier • Ahmedabad</p>
+                <p className="font-serif text-xl font-light">Make Over Unisex Atelier • Ahmedabad</p>
                 <p className="text-xs text-stone-300 font-sans mt-0.5">Walk-Ins Welcome & Digital Waitlist Enabled</p>
               </div>
             </div>
@@ -586,9 +582,14 @@ export default function HomePage() {
 
             {/* Brand Column */}
             <div className="md:col-span-5 space-y-4">
-              <span className="font-serif text-3xl font-light tracking-[0.25em] uppercase text-white">
-                {t('brandName')}
-              </span>
+              <div className="flex items-center gap-3">
+                <span className="font-serif text-3xl font-light tracking-[0.25em] uppercase text-white">
+                  {t('brandName')}
+                </span>
+                <span className="text-[9px] uppercase tracking-[0.2em] px-2.5 py-0.5 rounded-full border border-[#C5A880]/60 text-[#C5A880] font-sans font-medium">
+                  UNISEX
+                </span>
+              </div>
               <p className="text-xs text-stone-400 font-light font-sans max-w-sm leading-relaxed">
                 Elevating hair design through modern craftsmanship, bespoke dimensional styling, and real-time lounge queue orchestration.
               </p>
@@ -612,7 +613,7 @@ export default function HomePage() {
               <p className="text-white font-serif text-sm tracking-widest uppercase mb-4">Staff Portals</p>
               <p><Link to="/reception" className="hover:text-white transition-colors">Reception Desk →</Link></p>
               <p><Link to="/display" className="hover:text-white transition-colors">Wall TV Display →</Link></p>
-              <p><Link to="/barber/Sameer%20Khan" className="hover:text-white transition-colors">Stylist Workstation →</Link></p>
+              <p><Link to="/barber/chris-mcmillan" className="hover:text-white transition-colors">Stylist Workstation →</Link></p>
               <p><Link to="/admin" className="hover:text-white transition-colors">Owner Console →</Link></p>
             </div>
 

@@ -261,7 +261,7 @@ export default function TvDisplayPage() {
           <span>📞 +91 98765 43210</span>
         </div>
         <div>
-          <span>Make Over Real-Time Queue Orchestration</span>
+          <span>Make Over Unisex Real-Time Queue Orchestration</span>
         </div>
       </footer>
 

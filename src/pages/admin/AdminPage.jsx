@@ -218,9 +218,14 @@ export default function AdminPage() {
             <span className="text-[10px] font-semibold uppercase tracking-[0.25em] text-[#C5A880] border border-[#C5A880]/30 bg-stone-50 px-3 py-1 rounded-full">
               Executive Governance
             </span>
-            <h1 className="font-serif text-3xl font-light text-[#0F0F0F] mt-3 uppercase tracking-[0.18em]">
-              {t('brandName')}
-            </h1>
+            <div className="flex items-center justify-center gap-2.5 mt-3">
+              <h1 className="font-serif text-3xl font-light text-[#0F0F0F] uppercase tracking-[0.18em]">
+                {t('brandName')}
+              </h1>
+              <span className="text-[9px] uppercase tracking-[0.2em] px-2 py-0.5 rounded-full border border-[#C5A880]/60 text-[#C5A880] font-sans font-medium">
+                UNISEX
+              </span>
+            </div>
             <p className="text-xs text-stone-500 font-light mt-1">
               Floor Dispatch, Stylist Attributions & Management Portal
             </p>

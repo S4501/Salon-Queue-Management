@@ -109,7 +109,7 @@ export const translations = {
     
     // Completion Card
     serviceFinishedTitle: "Service Finished!",
-    serviceFinishedDesc: "Thank you for visiting Make Over Salon. We hope you loved your grooming experience!",
+    serviceFinishedDesc: "Thank you for visiting Make Over Unisex Salon. We hope you loved your grooming experience!",
     totalBill: "Total Bill Amount",
     backToHomeBtn: "Back to Home",
     
@@ -170,7 +170,7 @@ export const translations = {
     anyStylistRequest: "Any Stylist (First Available)",
     
     // TV Display
-    wallDisplayTitle: "MAKE OVER SALON",
+    wallDisplayTitle: "MAKE OVER UNISEX SALON",
     nowServingHeader: "STATION CHAIRS (NOW SERVING)",
     upcomingQueueHeader: "UPCOMING QUEUE",
     scanQRToJoin: "Scan QR to Join Queue",
@@ -182,7 +182,7 @@ export const translations = {
     requestedStylist: "Requested Stylist",
     nowServingBanner: "NOW SERVING",
     proceedToChairAnnouncement: "Please proceed to Chair #",
-    rollingTicker: "Welcome to Make Over Salon • Please keep an eye on your token number • Free Wi-Fi: MakeOver_Guest • Enjoy organic green tea at our beverage counter.",
+    rollingTicker: "Welcome to Make Over Unisex Salon • Please keep an eye on your token number • Free Wi-Fi: MakeOver_Guest • Enjoy organic green tea at our beverage counter.",
     tvAudioAlertOn: "Chime Alert: ON",
     tvAudioAlertOff: "Chime Alert: OFF",
     tvAudioVoiceMode: "Voice + Chime",
@@ -265,7 +265,7 @@ export const translations = {
     tokenNotFound: "No active queue token found matching this query.",
     
     // Mèche Luxury Editorial Sections
-    atelierEyebrow: "Premier Salon & Atelier • Luxury Hair Experience",
+    atelierEyebrow: "Premier Unisex Salon & Atelier • Luxury Hair Experience",
     philosophyTitle: "Effortless Artistry, Luminous Light & Modern Luxury",
     philosophyQuote: "“We believe hair should look lived-in, luminous, and effortlessly timeless. We have reimagined luxury salon care without the waiting.”",
     philosophyBody: "Founded on the belief that high fashion hair artistry should be accompanied by flawless hospitality, Make Over blends master colorists, precision cutting, and an effortless live floor queue orchestration system.",
@@ -394,7 +394,7 @@ export const translations = {
     
     // Completion Card
     serviceFinishedTitle: "સેવા પૂર્ણ થયેલ છે!",
-    serviceFinishedDesc: "મેક ઓવર સલૂનની મુલાકાત લેવા બદલ આભાર. આપનો અનુભવ આનંદદાયક રહ્યો હશે એવી આશા રાખીએ છીએ!",
+    serviceFinishedDesc: "મેક ઓવર યુનિસેક્સ સલૂનની મુલાકાત લેવા બદલ આભાર. આપનો અનુભવ આનંદદાયક રહ્યો હશે એવી આશા રાખીએ છીએ!",
     totalBill: "કુલ બિલ રકમ",
     backToHomeBtn: "મુખ્ય પૃષ્ઠ પર જાઓ",
     
@@ -455,7 +455,7 @@ export const translations = {
     anyStylistRequest: "કોઈ પણ કારીગર (પ્રથમ ઉપલબ્ધ)",
     
     // TV Display
-    wallDisplayTitle: "મેક ઓવર સલૂન",
+    wallDisplayTitle: "મેક ઓવર યુનિસેક્સ સલૂન",
     nowServingHeader: "કારીગર ખુરશીઓ (સેવા ચાલુ)",
     upcomingQueueHeader: "આગામી કતાર ક્રમ",
     scanQRToJoin: "કતારમાં જોડાવા માટે ક્યૂઆર સ્કેન કરો",
@@ -467,7 +467,7 @@ export const translations = {
     requestedStylist: "પસંદગીના કારીગર",
     nowServingBanner: "સેવા માટે બોલાવ્યા છે",
     proceedToChairAnnouncement: "કૃપા કરીને ખુરશી નંબર પર પધારો #",
-    rollingTicker: "મેક ઓવર સલૂનમાં આપનું હાર્દિક સ્વાગત છે • કૃપા કરીને આપના ટોકન નંબર પર નજર રાખો • ફ્રી વાઇ-ફાઇ: MakeOver_Guest • પીણાં કાઉન્ટર પર ઔષધીય ગ્રીન ટીનો આનંદ લો.",
+    rollingTicker: "મેક ઓવર યુનિસેક્સ સલૂનમાં આપનું હાર્દિક સ્વાગત છે • કૃપા કરીને આપના ટોકન નંબર પર નજર રાખો • ફ્રી વાઇ-ફાઇ: MakeOver_Guest • પીણાં કાઉન્ટર પર ઔષધીય ગ્રીન ટીનો આનંદ લો.",
     tvAudioAlertOn: "અવાજ એલર્ટ: ચાલુ",
     tvAudioAlertOff: "અવાજ એલર્ટ: બંધ",
     tvAudioVoiceMode: "અવાજ + ચાઇમ",
@@ -550,7 +550,7 @@ export const translations = {
     tokenNotFound: "આ વિગત સાથે કોઈ સક્રિય ટોકન મળેલ નથી.",
     
     // Mèche Luxury Editorial Sections
-    atelierEyebrow: "પ્રીમિયર સલૂન અને એટલિયર • લક્ઝરી હેર અનુભવ",
+    atelierEyebrow: "પ્રીમિયર યુનિસેક્સ સલૂન અને એટલિયર • લક્ઝરી હેર અનુભવ",
     philosophyTitle: "સરળ કલાત્મકતા, આધુનિક લક્ઝરી અને અનોખી સ્ટાઇલ",
     philosophyQuote: "“અમારું માનવું છે કે હેરસ્ટાઇલ સુંદર, તેજસ્વી અને કાયમી પ્રભાવશાળી હોવી જોઈએ. અમે લક્ઝરી સલૂન સેવામાંથી રાહ જોવાની ઝંઝટ સંપૂર્ણપણે દૂર કરી છે.”",
     philosophyBody: "મેક ઓવર સલૂન માસ્ટર હેર કટીંગ, સ્પેશિયાલિસ્ટ કલરિંગ અને રીઅલ-ટાઇમ કતાર વ્યવસ્થા સાથે અત્યાધુનિક લક્ઝરી સલૂન અનુભવ પ્રદાન કરે છે.",

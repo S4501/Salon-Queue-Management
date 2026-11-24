@@ -12,7 +12,24 @@ function loadPersistedState() {
     if (raw) {
       const parsed = JSON.parse(raw);
       if (parsed.queue && parsed.barbers && parsed.services) {
-        return parsed;
+        // Sync artist details (names, avatars, specialties) from initialBarbers so updates reflect immediately
+        const syncedBarbers = parsed.barbers.map(pb => {
+          const fresh = initialBarbers.find(ib => ib.id === pb.id);
+          if (fresh) {
+            return {
+              ...pb,
+              name: fresh.name,
+              gujaratiName: fresh.gujaratiName,
+              avatar: fresh.avatar,
+              specialty: fresh.specialty || pb.specialty
+            };
+          }
+          return pb;
+        });
+        return {
+          ...parsed,
+          barbers: syncedBarbers
+        };
       }
     }
   } catch (err) {

@@ -60,9 +60,14 @@ export default function Header() {
           <div className="w-10 h-10 rounded-full border border-current flex items-center justify-center transition-transform duration-500 group-hover:rotate-12">
             <span className="font-serif italic text-lg leading-none font-light">M</span>
           </div>
-          <span className={`font-serif text-xl sm:text-2xl font-light tracking-[0.25em] uppercase transition-colors ${logoColor}`}>
-            {t('brandName')}
-          </span>
+          <div className="flex items-center gap-2 sm:gap-2.5">
+            <span className={`font-serif text-xl sm:text-2xl font-light tracking-[0.25em] uppercase transition-colors ${logoColor}`}>
+              {t('brandName')}
+            </span>
+            <span className="text-[9px] uppercase tracking-[0.2em] px-2 py-0.5 rounded-full border border-[#C5A880]/60 text-[#C5A880] font-sans font-medium">
+              UNISEX
+            </span>
+          </div>
         </Link>
 
         {/* Center Editorial Navigation Links (Desktop - Customer Facing Only - Perfectly Centered) */}

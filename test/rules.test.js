@@ -176,14 +176,14 @@ function validateBarberAvailability(barberId, barbers) {
   return { isAllowed: true };
 }
 
-const breakCheck1 = validateBarberAvailability('barber-3', initialBarbers); // Rahul is ON_BREAK
+const breakCheck1 = validateBarberAvailability('barber-3', initialBarbers); // Rita is ON_BREAK
 assert.strictEqual(breakCheck1.isAllowed, false);
 assert.strictEqual(breakCheck1.reason, 'BARBER_ON_BREAK');
-console.log('✓ Stylist on break (Rahul Trivedi) is strictly blocked from queue selection.');
+console.log('✓ Stylist on break (Rita Hazan) is strictly blocked from queue selection.');
 
-const breakCheck2 = validateBarberAvailability('barber-2', initialBarbers); // Vikram is AVAILABLE
+const breakCheck2 = validateBarberAvailability('barber-2', initialBarbers); // Jen is AVAILABLE
 assert.strictEqual(breakCheck2.isAllowed, true);
-console.log('✓ Available stylist (Vikram Solanki) correctly permitted.');
+console.log('✓ Available stylist (Jen Atkin) correctly permitted.');
 
 const breakCheck3 = validateBarberAvailability('ANY', initialBarbers);
 assert.strictEqual(breakCheck3.isAllowed, true);
@@ -247,15 +247,15 @@ console.log('✓ TV wall display beep, 4 chime presets, and spoken customer anno
 console.log('\nTest 12: Fast Chair Allocation for Any Stylist');
 
 // Simulate the scenario from user report:
-// barber-1 (Sameer) is BUSY with T-103
-// barber-2 (Vikram) is BUSY with T-102
-// barber-3 (Rahul Trivedi) is AVAILABLE NOW
-// barber-4 (Manoj Parmar) is AVAILABLE NOW
+// barber-1 (Chris) is BUSY with T-103
+// barber-2 (Jen) is BUSY with T-102
+// barber-3 (Rita Hazan) is AVAILABLE NOW
+// barber-4 (Christopher Pierce) is AVAILABLE NOW
 const mockBarbers = [
-  { id: 'barber-1', name: 'Sameer Khan', status: 'BUSY', currentServiceToken: 'T-103' },
-  { id: 'barber-2', name: 'Vikram Solanki', status: 'BUSY', currentServiceToken: 'T-102' },
-  { id: 'barber-3', name: 'Rahul Trivedi', status: 'AVAILABLE', currentServiceToken: null },
-  { id: 'barber-4', name: 'Manoj Parmar', status: 'AVAILABLE', currentServiceToken: null }
+  { id: 'barber-1', name: 'Chris McMillan', status: 'BUSY', currentServiceToken: 'T-103' },
+  { id: 'barber-2', name: 'Jen Atkin', status: 'BUSY', currentServiceToken: 'T-102' },
+  { id: 'barber-3', name: 'Rita Hazan', status: 'AVAILABLE', currentServiceToken: null },
+  { id: 'barber-4', name: 'Christopher Pierce', status: 'AVAILABLE', currentServiceToken: null }
 ];
 
 const mockWaitingPatrons = [
@@ -266,18 +266,18 @@ const mockWaitingPatrons = [
 
 // Algorithm resolution test:
 const availableBarbers = mockBarbers.filter(b => b.status === 'AVAILABLE' && !b.currentServiceToken);
-assert.strictEqual(availableBarbers.length, 2, 'Should have 2 available barbers (Rahul & Manoj)');
-assert.strictEqual(availableBarbers[0].id, 'barber-3', 'First available barber must be Rahul Trivedi (Chair 03)');
+assert.strictEqual(availableBarbers.length, 2, 'Should have 2 available barbers (Rita & Christopher)');
+assert.strictEqual(availableBarbers[0].id, 'barber-3', 'First available barber must be Rita Hazan (Chair 03)');
 
-// Calling "ANY" patron must pick Rahul Trivedi (barber-3) and NOT attempt busy barber-1
+// Calling "ANY" patron must pick Rita Hazan (barber-3) and NOT attempt busy barber-1
 const targetBarberForAny = availableBarbers[0].id;
-assert.strictEqual(targetBarberForAny, 'barber-3', 'Any Stylist must dispatch to available Rahul Trivedi');
+assert.strictEqual(targetBarberForAny, 'barber-3', 'Any Stylist must dispatch to available Rita Hazan');
 
 // Concurrency guard check:
 const isBarber1Busy = mockBarbers.find(b => b.id === 'barber-1').status === 'BUSY';
-assert.strictEqual(isBarber1Busy, true, 'Sameer Khan is busy and should not be dispatched to for ANY');
+assert.strictEqual(isBarber1Busy, true, 'Chris McMillan is busy and should not be dispatched to for ANY');
 
-console.log('✓ Any Stylist correctly assigns to free Chair 03 (Rahul Trivedi) when chairs 1 and 2 are busy.');
+console.log('✓ Any Stylist correctly assigns to free Chair 03 (Rita Hazan) when chairs 1 and 2 are busy.');
 console.log('✓ Specific token calling and chair open status properly validated.');
 
 console.log('\n🎉 ALL 12 TEST SUITES PASSED FLAWLESSLY!\n');
